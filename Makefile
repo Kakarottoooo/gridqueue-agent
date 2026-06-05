@@ -1,7 +1,7 @@
-.PHONY: install ingest-fixtures ingest-live-ercot ingest-lbnl counts test eval dev-api dev-web demo frontend-typecheck frontend-lint
+.PHONY: install ingest-fixtures ingest-live-ercot ingest-lbnl seed-flex-rules flex-demo counts test eval dev-api dev-web demo frontend-typecheck frontend-lint
 
 install:
-	python -m pip install -e backend[dev]
+	python -m pip install -e "backend[dev]"
 	cd frontend && npm install
 
 ingest-fixtures:
@@ -12,6 +12,13 @@ ingest-live-ercot:
 
 ingest-lbnl:
 	python scripts/ingest_lbnl.py
+
+seed-flex-rules:
+	python scripts/seed_flexibility_rules.py
+
+flex-demo:
+	python scripts/ingest_fixture.py
+	python scripts/seed_flexibility_rules.py
 
 counts:
 	python scripts/print_counts.py
@@ -36,4 +43,3 @@ dev-web:
 
 demo:
 	python scripts/run_demo.py
-

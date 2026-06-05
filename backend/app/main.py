@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import cors_origins
 from app.routers.api import router
+from app.routers.flexibility import router as flexibility_router
 
 
 app = FastAPI(
@@ -22,3 +23,4 @@ app.add_middleware(
 )
 
 app.include_router(router)
+app.include_router(flexibility_router)

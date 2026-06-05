@@ -43,3 +43,18 @@ citations, and evals.
 
 `data/raw` and `data/processed` are gitignored. Synthetic fixtures, docs, source code, tests, and eval code are
 committed; raw downloaded public files and DuckDB outputs are not.
+
+## Flexibility Strategy Layer
+
+The flexibility layer is implemented as a Phase 2 extension rather than a separate project because it depends on the
+same public-data baseline, citation system, DuckDB schema, FastAPI API, deterministic eval runner, and Next.js UI.
+
+Deterministic modeling is preferred over LLM inference. Rule status, eligibility criteria, compute-cost formulas, and
+benefit abstentions are structured so tests and evals can catch overclaims.
+
+Proposed, pending, directed, context-only, or needs-review records produce contingent or unsupported outputs. They do
+not produce final eligibility or quantified timeline benefits unless the seeded rule has final/approved status and a
+cited `quantified_benefit_json`.
+
+No runtime scheduling is implemented. GridQueue evaluates whether a curtailable-load commitment is worth considering;
+it does not execute curtailment, schedule GPU jobs, or operate a controller.

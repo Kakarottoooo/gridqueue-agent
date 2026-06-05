@@ -123,6 +123,23 @@ h2 {
   gap: 12px;
 }
 
+.flex-control-block {
+  display: grid;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.control-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #34423f;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
 label {
   display: grid;
   gap: 6px;
@@ -146,6 +163,25 @@ textarea {
   padding: 10px 11px;
   font-size: 14px;
   line-height: 1.25;
+}
+
+.checkbox-row {
+  grid-template-columns: 18px 1fr;
+  align-items: center;
+  gap: 9px;
+}
+
+.checkbox-row input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.checkbox-row span {
+  text-transform: none;
+  font-size: 13px;
+  color: #33403d;
 }
 
 textarea {
@@ -398,4 +434,3 @@ tr:last-child td {
     padding: 16px;
   }
 }
-
