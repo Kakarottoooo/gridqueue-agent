@@ -8,9 +8,17 @@ Public Interconnection Risk Briefs.
 Phase 2 adds a Flexibility Strategy Layer for large-load planning. It evaluates whether a proposed curtailable-load
 commitment is worth considering under public FERC/ISO/RTO context and explicit compute-cost assumptions.
 
+Phase 3 adds a Monthly Regulatory + Queue Change Watcher and a conservative Post-NTP Lead-Time scaffold. The Watcher
+turns existing queue diffs and curated rule-source changes into a ranked, citation-grounded "what changed?" digest.
+The Post-NTP Lead-Time scaffold is an early knowledge-base demo, not a procurement product.
+
 It complements power-development platforms such as Paces by focusing on the public-data layer: queue monitoring,
 change detection, historical benchmarking, source-grounded summaries, and automated quality checks. It does not copy
 parcel-level siting, permitting, proprietary diligence, power-flow studies, or upgrade-cost modeling workflows.
+
+GridQueue Agent is not a Paces clone. It does not perform proprietary siting, formal power-flow studies, permit
+submissions, procurement execution, or OEM RFQs. It focuses on public-data intelligence, flexibility strategy,
+high-stakes agent evaluation, and conservative operational monitoring.
 
 ## What it does not do
 
@@ -20,6 +28,8 @@ parcel-level siting, permitting, proprietary diligence, power-flow studies, or u
 - It does not report rates from samples that are too small; it rolls up or abstains.
 - The Flexibility Strategy Layer does not execute curtailment, schedule GPU workloads, submit interconnection filings,
   provide legal advice, estimate real upgrade costs, or guarantee approval.
+- The Monthly Watcher does not fabricate changes when parsing fails or when entity matching is ambiguous.
+- The Post-NTP Lead-Time scaffold is an early knowledge-base demo, not a procurement product.
 
 ## Architecture
 
@@ -43,6 +53,10 @@ graph TD
   G --> L
   G --> M["Flexibility Strategy Layer"]
   M --> J
+  F --> N["Monthly Watcher"]
+  M --> N
+  N --> J
+  O["Post-NTP Lead-Time Scaffold"] --> J
 ```
 
 ## Data sources
@@ -51,6 +65,7 @@ graph TD
 - ERCOT Large Load Update, April 9 2026: https://www.ercot.com/files/docs/2026/04/09/ERCOTLargeLoadUpdate-April9HouseStateAffairsHearing.pdf
 - LBNL Queued Up: https://emp.lbl.gov/queues
 - gridstatus queue docs: https://opensource.gridstatus.io/en/latest/interconnection_queues.html
+- DOE Large Power Transformer Resilience Report: https://www.energy.gov/sites/default/files/2024-10/EXEC-2022-001242%20-%20Large%20Power%20Transformer%20Resilience%20Report%20signed%20by%20Secretary%20Granholm%20on%207-10-24.pdf
 
 The default demo uses synthetic fixtures under `data/fixtures`. They are clearly marked synthetic and are not market facts.
 
@@ -62,6 +77,9 @@ make ingest-fixtures
 make test
 make eval
 make seed-flex-rules
+make seed-watch-sources
+make run-watcher
+make seed-lead-time-kb
 make dev-api
 make dev-web
 ```
@@ -79,6 +97,9 @@ python -m pip install -e backend[dev]
 cd frontend; npm install; cd ..
 python scripts/ingest_fixture.py
 python scripts/seed_flexibility_rules.py
+python scripts/seed_watch_sources.py
+python scripts/run_monthly_watcher.py --mode fixture --period 2026-05
+python scripts/seed_lead_time_kb.py
 python -m pytest backend/tests
 python evals/run_evals.py
 python -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000 --reload
@@ -155,6 +176,50 @@ result contingent.
 
 See `docs/FLEXIBILITY_STRATEGY.md`, `docs/FLEXIBILITY_RULES.md`, and `docs/COMPUTE_COST_MODEL.md`.
 
+## Phase 3: Monthly Watcher
+
+The Monthly Regulatory + Queue Change Watcher answers: what materially changed this month in queues and in the public
+rules that affect them?
+
+Run it locally:
+
+```powershell
+python scripts/run_monthly_watcher.py --mode fixture --period 2026-05
+```
+
+New endpoints:
+
+- `GET /watcher/sources`
+- `POST /watcher/sources/seed`
+- `POST /watcher/run`
+- `POST /watcher/queue-adapter`
+- `POST /watcher/regulatory-snapshot`
+- `POST /watcher/digest`
+- `GET /watcher/digests`
+- `GET /watcher/digests/latest`
+- `GET /watcher/change-events`
+
+The UI has a `Watcher` tab. Fixture mode generates a digest from existing queue diffs, curated source hash changes,
+flexibility rule records, suppressed ambiguous matches, parse failures, citations, and reproducibility trace.
+
+See `docs/WATCHER.md`.
+
+## Post-NTP Lead-Time Scaffold
+
+The Post-NTP Lead-Time scaffold is an early knowledge-base demo, not a procurement product. It seeds a cited,
+range-based Large Power Transformer lead-time row from a government-report source and exposes it through:
+
+- `POST /procurement/lead-times/seed`
+- `GET /procurement/lead-times`
+
+Seed it locally:
+
+```powershell
+python scripts/seed_lead_time_kb.py
+```
+
+See `docs/POST_NTP_LEAD_TIME.md`.
+
 ## Entity resolution
 
 The matcher is deterministic and explainable. It scores exact queue IDs, normalized name similarity, interconnecting
@@ -181,9 +246,9 @@ Sample output:
 
 ```json
 {
-  "passed": 26,
+  "passed": 46,
   "failed": 0,
-  "total": 26
+  "total": 46
 }
 ```
 
@@ -207,6 +272,9 @@ Calling those scripts without a file prints manual-download instructions.
 - Frontend build: `cd frontend && npm run build`
 - Dependency audit: `cd frontend && npm audit --audit-level=moderate`
 - Flexibility seed: `python scripts/seed_flexibility_rules.py`
+- Watcher source seed: `python scripts/seed_watch_sources.py`
+- Watcher digest: `python scripts/run_monthly_watcher.py --mode fixture --period 2026-05`
+- Lead-time KB seed: `python scripts/seed_lead_time_kb.py`
 
 ## Demo screenshots
 
@@ -222,6 +290,8 @@ inspect the current fixture-backed demo.
 - Flexibility rule seeds require manual verification before real-world use; FERC/PJM pending or directed records are not
   treated as final benefits.
 - Compute-cost penalty values are scenario assumptions, not observed market prices or legal/financial advice.
+- Watcher live mode is conservative and local-first; fixture mode is the default verification path.
+- Lead-time data is public-source range data and can become stale; it is not a quote or supplier commitment.
 
 ## Roadmap
 
@@ -231,3 +301,5 @@ inspect the current fixture-backed demo.
 - Add optional LLM polishing constrained to deterministic facts and citations.
 - Add Docker Compose and hosted preview deployment.
 - Add human review workflow for flexibility rule/status verification.
+- Add reviewed production source snapshots and notification delivery for monthly watcher digests.
+- Expand the Post-NTP scaffold into a critical-path model only after source coverage is stronger.

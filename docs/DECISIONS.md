@@ -58,3 +58,23 @@ cited `quantified_benefit_json`.
 
 No runtime scheduling is implemented. GridQueue evaluates whether a curtailable-load commitment is worth considering;
 it does not execute curtailment, schedule GPU jobs, or operate a controller.
+
+## Monthly Watcher
+
+The Monthly Watcher is implemented as a unified adapter layer over existing `diff_events`, regulatory source snapshots,
+and flexibility rules. It does not replace the core queue diff engine. This keeps the original entity-resolution and
+diff semantics intact while allowing ranked operational digests.
+
+Source monitoring is curated rather than crawler-based. Broad scraping would create unsupported facts and noisy alerts.
+The Watcher therefore stores explicit `watch_sources`, content hashes, parse status, and manual-review events.
+
+Ambiguous queue matches are visible but not hard alerts. Parse failures are listed as manual review and are not
+summarized as if parsed.
+
+## Post-NTP Lead-Time Scaffold
+
+The Post-NTP Lead-Time layer is a scaffold because public lead-time data is weak, non-uniform, and usually not
+project-specific. V1 stores cited ranges with recency and confidence metadata for one equipment class rather than
+creating a procurement product.
+
+No firm quotes, prices, OEM ranking, RFQ workflow, or guaranteed delivery timeline are implemented.

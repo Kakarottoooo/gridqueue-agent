@@ -56,6 +56,27 @@
 - Phase 2 status: Seeded as `technical_evidence`.
 - Caveat: It is not an ISO/RTO tariff or regulatory eligibility rule.
 
+## FERC SPP HILL concurrence / acceptance context
+
+- URL: https://www.ferc.gov/news-events/news/commissioner-rosners-concurrence-order-accepting-tariff-revisions-subject
+- Role: Watcher source for SPP HILL/HILLGA acceptance context.
+- Watcher status: Seeded as curated monthly watch source.
+- Caveat: The Watcher emits source-diff/manual-review events and does not silently reinterpret tariff status.
+
+## DOE Large Power Transformer Resilience Report
+
+- URL: https://www.energy.gov/sites/default/files/2024-10/EXEC-2022-001242%20-%20Large%20Power%20Transformer%20Resilience%20Report%20signed%20by%20Secretary%20Granholm%20on%207-10-24.pdf
+- Role: Primary source for the Post-NTP Lead-Time scaffold Large Power Transformer demo.
+- Scaffold status: Seeded as a government-report source with a 36-to-60 month range.
+- Caveat: This is not a procurement quote, price, OEM ranking, or delivery guarantee.
+
+## Watcher manual fixture sources
+
+- URL: `synthetic://gridqueue-agent/fixtures/watcher/*`
+- Role: Offline deterministic source-diff and parse-failure fixtures.
+- Watcher status: Used in fixture mode so tests and evals do not require live web access.
+- Caveat: Synthetic watcher fixtures are not regulatory facts.
+
 ## Manual ingestion fallback
 
 If automatic source download is blocked or a public website changes, use:

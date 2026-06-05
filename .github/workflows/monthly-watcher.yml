@@ -1,0 +1,48 @@
+name: Monthly Watcher
+
+on:
+  workflow_dispatch:
+    inputs:
+      period:
+        description: "Watcher period in YYYY-MM format"
+        required: true
+        default: "2026-05"
+  schedule:
+    - cron: "0 14 1 * *"
+
+jobs:
+  fixture-watcher:
+    name: Generate fixture watcher digest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install backend
+        run: python -m pip install -e "backend[dev]"
+
+      - name: Ingest fixture data
+        run: python scripts/ingest_fixture.py
+
+      - name: Seed flexibility rules
+        run: python scripts/seed_flexibility_rules.py
+
+      - name: Seed watcher sources
+        run: python scripts/seed_watch_sources.py
+
+      - name: Seed lead-time KB
+        run: python scripts/seed_lead_time_kb.py
+
+      - name: Run monthly watcher
+        run: python scripts/run_monthly_watcher.py --mode fixture --period "${{ github.event.inputs.period || '2026-05' }}"
+
+      - name: Upload digest artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: watcher-digest
+          path: digests/*.md
