@@ -1,0 +1,16 @@
+Queue No,Project,Interconnecting Entity,County,State,POI,Transmission Owner,Technology,Capacity (MW),Status,Request Date,Target COD,Actual COD,Withdrawn Date,IA Date,Last Updated,Snapshot Date
+Q-1001,Lone Star Solar LLC,Lone Star Energy LLC,Reeves County,TX,Phantom Draw 345kV,Oncor,Solar PV,100,Active,2024-01-15,2028-06-01,,,,2026-01-31,2026-01-31
+Q-1002,"Pecos Battery Storage, Inc.",Pecos Storage Co,Reeves,TX,Balmorhea 138 kV,Oncor,BESS,100,Active,2023-11-01,2027-12-31,,,,2026-01-31,2026-01-31
+Q-1003,Blue Mesa Wind,Blue Mesa Renewables,Nolan,TX,Champion Creek 345kV,AEP Texas,Wind,150,Active,2023-05-20,2026-10-01,,,,2026-01-31,2026-01-31
+Q-1004,Cedar Creek Solar,Cedar Creek Power LLC,Reeves,TX,Solstice 138 kV,Oncor,Solar,80,Active,2024-02-02,2027-05-01,,,,2026-01-31,2026-01-31
+Q-1005,Rio Grande Storage,Rio Grande Energy LP,Pecos,TX,Fort Stockton 138kV,Oncor,Battery Storage,60,Active,2024-03-12,2028-03-01,,,,2026-01-31,2026-01-31
+Q-1006,Sunfield Hybrid,Sunfield Energy LLC,Reeves,TX,Barilla Junction 345kV,Oncor,Solar,120,Active,2024-04-07,2028-02-01,,,,2026-01-31,2026-01-31
+Q-1007,Oak Bend Solar,Oak Bend Power Inc,Harris,TX,Greens Bayou 138kV,CenterPoint,Solar,50,Active,2022-12-11,2026-07-01,,,,2026-01-31,2026-01-31
+Q-1008,Clear Fork Battery,Clear Fork Storage LLC,Reeves,TX,Clear Fork 138 kV,Oncor,Battery,25,Active,2024-05-03,2028-01-15,,,,2026-01-31,2026-01-31
+Q-1009,Legacy Gas Repower,Legacy Thermal LLC,Tarrant,TX,Eagle Mountain 345kV,Oncor,Gas CT,300,Completed,2022-06-01,2025-06-01,2025-05-20,,,2026-01-31,2026-01-31
+Q-1010,Withdrawn Wind Alpha,Alpha Wind Holdings,Nolan,TX,Sweetwater 345kV,AEP Texas,Wind,200,Active,2023-07-18,2027-09-01,,,,2026-01-31,2026-01-31
+Q-1011,Twin Buttes Solar North,Twin Buttes Energy,Reeves,TX,Twin Buttes 138kV,Oncor,Solar,75,Active,2024-06-01,2028-04-01,,,,2026-01-31,2026-01-31
+Q-1012,Twin Buttes Solar South,Twin Buttes Energy,Reeves,TX,Twin Buttes 138kV,Oncor,Solar,76,Active,2024-06-03,2028-04-15,,,,2026-01-31,2026-01-31
+Q-1013,Old Battery Done,Old Storage LLC,Reeves,TX,Quarry 138kV,Oncor,Battery,40,Completed,2022-01-05,2025-12-01,2025-11-20,,,2026-01-31,2026-01-31
+Q-1014,Permian Solar West,Permian Development LLC,Reeves,TX,Phantom Draw 345kV,Oncor,Solar,95,Withdrawn,2023-10-09,2027-10-01,,2026-01-10,,2026-01-31,2026-01-31
+
