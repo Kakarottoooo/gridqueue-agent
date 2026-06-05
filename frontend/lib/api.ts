@@ -99,6 +99,39 @@ export type FlexibilityBrief = {
   scenario_id: string;
 };
 
+export type WatcherRequest = {
+  mode: "fixture" | "manual" | "live";
+  period_start: string;
+  period_end: string;
+  market: string;
+  from_snapshot_id: string | null;
+  to_snapshot_id: string | null;
+  top_n: number;
+};
+
+export type WatcherDigest = {
+  digest_id: string;
+  title: string;
+  executive_summary: string[];
+  top_queue_changes: Array<Record<string, unknown>>;
+  top_regulatory_changes: Array<Record<string, unknown>>;
+  flexibility_rule_watch: Array<Record<string, unknown>>;
+  suppressed_ambiguous: Array<Record<string, unknown>>;
+  parse_failures: Array<Record<string, unknown>>;
+  metrics_summary: Record<string, unknown>;
+  citations: Array<Record<string, unknown>>;
+  reproducibility_trace: string[];
+  caveats: string[];
+  markdown: string;
+  markdown_path: string;
+};
+
+export type WatcherRunResult = {
+  status: string;
+  digest: WatcherDigest;
+  change_event_count: number;
+};
+
 export type DiffResult = {
   from_snapshot_id: string;
   to_snapshot_id: string;

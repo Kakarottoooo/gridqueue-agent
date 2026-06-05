@@ -1,15 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Activity, AlertTriangle, BarChart3, BookOpenCheck, Database, FileText, GitCompare, ListChecks, RefreshCw, SearchCode, ShieldCheck, Zap } from "lucide-react";
+import { Activity, AlertTriangle, BarChart3, Bell, BookOpenCheck, Database, FileText, GitCompare, ListChecks, RefreshCw, SearchCode, ShieldCheck, Zap } from "lucide-react";
 import { JsonBlock } from "@/components/JsonBlock";
-import { apiGet, apiPost, type Brief, type BriefRequest, type DiffResult, type EntityMatches, type FlexibilityBrief, type FlexibilityRequest, type Snapshot, type Source } from "@/lib/api";
+import { apiGet, apiPost, type Brief, type BriefRequest, type DiffResult, type EntityMatches, type FlexibilityBrief, type FlexibilityRequest, type Snapshot, type Source, type WatcherDigest, type WatcherRequest, type WatcherRunResult } from "@/lib/api";
 
-type TabKey = "brief" | "flexibility" | "diff" | "metrics" | "matching" | "citations" | "evals";
+type TabKey = "brief" | "flexibility" | "watcher" | "diff" | "metrics" | "matching" | "citations" | "evals";
 
 const tabs: Array<{ key: TabKey; label: string }> = [
   { key: "brief", label: "Brief" },
   { key: "flexibility", label: "Flexibility Strategy" },
+  { key: "watcher", label: "Watcher" },
   { key: "diff", label: "Monthly Diff" },
   { key: "metrics", label: "Metrics" },
   { key: "matching", label: "Entity Matching" },
@@ -52,17 +53,31 @@ const defaultFlexForm: FlexibilityRequest = {
   value_per_day_usd: null
 };
 
+const defaultWatcherForm: WatcherRequest = {
+  mode: "fixture",
+  period_start: "2026-05-01",
+  period_end: "2026-05-31",
+  market: "ERCOT",
+  from_snapshot_id: null,
+  to_snapshot_id: null,
+  top_n: 10
+};
+
 export default function Home() {
   const [form, setForm] = useState<BriefRequest>(defaultForm);
   const [flexForm, setFlexForm] = useState<FlexibilityRequest>(defaultFlexForm);
+  const [watcherForm, setWatcherForm] = useState<WatcherRequest>(defaultWatcherForm);
   const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
   const [sources, setSources] = useState<Source[]>([]);
   const [flexRules, setFlexRules] = useState<Array<Record<string, unknown>>>([]);
+  const [watchSources, setWatchSources] = useState<Array<Record<string, unknown>>>([]);
   const [fromSnapshot, setFromSnapshot] = useState("");
   const [toSnapshot, setToSnapshot] = useState("");
   const [activeTab, setActiveTab] = useState<TabKey>("brief");
   const [brief, setBrief] = useState<Brief | null>(null);
   const [flexBrief, setFlexBrief] = useState<FlexibilityBrief | null>(null);
+  const [watcherDigest, setWatcherDigest] = useState<WatcherDigest | null>(null);
+  const [watcherEvents, setWatcherEvents] = useState<Array<Record<string, unknown>>>([]);
   const [diff, setDiff] = useState<DiffResult | null>(null);
   const [metrics, setMetrics] = useState<Record<string, unknown> | null>(null);
   const [matches, setMatches] = useState<EntityMatches | null>(null);
@@ -222,6 +237,49 @@ export default function Home() {
       setActiveTab("flexibility");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Flexibility brief generation failed.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function seedWatcherSources() {
+    setBusy(true);
+    setStatus("Seeding curated watcher sources...");
+    try {
+      await apiPost("/watcher/sources/seed");
+      const result = await apiGet<{ sources: Array<Record<string, unknown>> }>("/watcher/sources");
+      setWatchSources(result.sources);
+      setStatus("Watcher sources seeded. Curated source list is ready.");
+      setActiveTab("watcher");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Watcher source seed failed.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function runWatcher() {
+    setBusy(true);
+    setStatus("Running monthly watcher in fixture mode...");
+    try {
+      await apiPost("/watcher/sources/seed");
+      const payload: WatcherRequest = {
+        ...watcherForm,
+        from_snapshot_id: fromSnapshot || null,
+        to_snapshot_id: toSnapshot || null
+      };
+      const [runResult, sourceResult] = await Promise.all([
+        apiPost<WatcherRunResult>("/watcher/run", payload),
+        apiGet<{ sources: Array<Record<string, unknown>> }>("/watcher/sources")
+      ]);
+      const eventResult = await apiGet<{ change_events: Array<Record<string, unknown>> }>("/watcher/change-events");
+      setWatcherDigest(runResult.digest);
+      setWatcherEvents(eventResult.change_events);
+      setWatchSources(sourceResult.sources);
+      setStatus("Monthly watcher digest generated with source-backed change events.");
+      setActiveTab("watcher");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Watcher run failed.");
     } finally {
       setBusy(false);
     }
@@ -404,6 +462,43 @@ export default function Home() {
             </button>
           </form>
         </section>
+
+        <section className="flex-control-block" aria-label="Watcher inputs">
+          <div className="control-heading">
+            <Bell size={17} aria-hidden="true" />
+            <span>Monthly Watcher</span>
+          </div>
+          <button className="secondary-button" type="button" onClick={seedWatcherSources} disabled={busy}>
+            <Database size={17} aria-hidden="true" />
+            Seed watch sources
+          </button>
+          <form className="form-grid" onSubmit={(event) => { event.preventDefault(); void runWatcher(); }}>
+            <label>
+              <span>Mode</span>
+              <select value={watcherForm.mode} onChange={(event) => setWatcherForm({ ...watcherForm, mode: event.target.value as WatcherRequest["mode"] })}>
+                <option value="fixture">fixture</option>
+                <option value="manual">manual</option>
+                <option value="live">live</option>
+              </select>
+            </label>
+            <label>
+              <span>Period start</span>
+              <input type="date" value={watcherForm.period_start} onChange={(event) => setWatcherForm({ ...watcherForm, period_start: event.target.value })} />
+            </label>
+            <label>
+              <span>Period end</span>
+              <input type="date" value={watcherForm.period_end} onChange={(event) => setWatcherForm({ ...watcherForm, period_end: event.target.value })} />
+            </label>
+            <label>
+              <span>Top N</span>
+              <input type="number" min={1} max={50} value={watcherForm.top_n} onChange={(event) => setWatcherForm({ ...watcherForm, top_n: Number(event.target.value) })} />
+            </label>
+            <button className="primary-button" type="submit" disabled={busy}>
+              <Bell size={18} aria-hidden="true" />
+              Run watcher
+            </button>
+          </form>
+        </section>
       </aside>
 
       <section className="workspace">
@@ -429,6 +524,7 @@ export default function Home() {
         <div className="tab-panel">
           {activeTab === "brief" && <BriefTab brief={brief} />}
           {activeTab === "flexibility" && <FlexibilityTab brief={flexBrief} rules={flexRules} />}
+          {activeTab === "watcher" && <WatcherTab digest={watcherDigest} events={watcherEvents} sources={watchSources} />}
           {activeTab === "diff" && <DiffTab diff={diff} />}
           {activeTab === "metrics" && <MetricsTab metrics={metrics ?? brief?.historical_proxy ?? null} />}
           {activeTab === "matching" && <MatchesTab matches={matches} />}
@@ -437,6 +533,80 @@ export default function Home() {
         </div>
       </section>
     </main>
+  );
+}
+
+function WatcherTab({ digest, events, sources }: { digest: WatcherDigest | null; events: Array<Record<string, unknown>>; sources: Array<Record<string, unknown>> }) {
+  if (!digest && !sources.length && !events.length) {
+    return <EmptyState icon={<Bell size={24} />} title="No watcher digest loaded" body="Seed watch sources or run the monthly watcher in fixture mode." />;
+  }
+  if (!digest) {
+    return (
+      <div className="content-stack">
+        <section>
+          <h2>Watch Sources</h2>
+          <DataTable rows={sources} columns={["source_name", "source_type", "jurisdiction", "watch_frequency", "source_url"]} />
+        </section>
+        <section>
+          <h2>Change Events</h2>
+          <DataTable rows={events} columns={["change_event_id", "event_domain", "event_type", "materiality_score", "source_url"]} />
+        </section>
+      </div>
+    );
+  }
+  return (
+    <div className="content-stack">
+      <section className="brief-banner">
+        <AlertTriangle size={20} aria-hidden="true" />
+        <span>{digest.caveats[0]}</span>
+      </section>
+      <section>
+        <h2>{digest.title}</h2>
+        <ul className="plain-list">
+          {digest.executive_summary.map((item) => <li key={item}>{item}</li>)}
+        </ul>
+      </section>
+      <section className="metric-strip">
+        <Metric label="Queue alerts" value={digest.top_queue_changes.length} />
+        <Metric label="Regulatory alerts" value={digest.top_regulatory_changes.length} />
+        <Metric label="Suppressed" value={digest.suppressed_ambiguous.length} />
+        <Metric label="Parse failures" value={digest.parse_failures.length} />
+      </section>
+      <section>
+        <h2>Top Queue Changes</h2>
+        <DataTable rows={digest.top_queue_changes} columns={["change_event_id", "event_type", "entity_or_provision", "materiality_score", "confidence", "source_url"]} />
+      </section>
+      <section>
+        <h2>Top Regulatory Changes</h2>
+        <DataTable rows={digest.top_regulatory_changes} columns={["change_event_id", "event_type", "entity_or_provision", "materiality_score", "confidence", "source_url"]} />
+      </section>
+      <section>
+        <h2>Flexibility Rule Watch</h2>
+        <DataTable rows={digest.flexibility_rule_watch} columns={["change_event_id", "event_type", "entity_or_provision", "materiality_score", "source_url"]} />
+      </section>
+      <section>
+        <h2>Ambiguous / Suppressed</h2>
+        <DataTable rows={digest.suppressed_ambiguous} columns={["change_event_id", "event_type", "entity_or_provision", "is_hard_alert", "source_trace"]} />
+      </section>
+      <section>
+        <h2>Parse Failures / Manual Review</h2>
+        <DataTable rows={digest.parse_failures} columns={["change_event_id", "event_type", "entity_or_provision", "explanation", "source_url"]} />
+      </section>
+      <section>
+        <h2>Citations</h2>
+        <DataTable rows={digest.citations} columns={["change_event_id", "citation_label", "source_url", "source_trace"]} />
+      </section>
+      <section>
+        <h2>Reproducibility Trace</h2>
+        <ul className="trace-list">
+          {digest.reproducibility_trace.map((item) => <li key={item}>{item}</li>)}
+        </ul>
+      </section>
+      <section>
+        <h2>Digest Markdown</h2>
+        <p className="muted">{digest.markdown_path}</p>
+      </section>
+    </div>
   );
 }
 
