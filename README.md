@@ -1,27 +1,40 @@
 # GridQueue Agent
 
-GridQueue Agent is a local-first public-data intelligence system for interconnection queue monitoring. It ingests
-public or synthetic queue snapshots, normalizes messy project records, resolves stable entities across monthly
-snapshots, detects meaningful changes, computes sample-aware historical proxy metrics, and generates citation-grounded
-Public Interconnection Risk Briefs.
+GridQueue Agent turns public interconnection queue files into source-traceable queue intelligence.
 
-Phase 2 adds a Flexibility Strategy Layer for large-load planning. It evaluates whether a proposed curtailable-load
-commitment is worth considering under public FERC/ISO/RTO context and explicit compute-cost assumptions.
+Repository: https://github.com/Kakarottoooo/gridqueue-agent
 
-Phase 3 adds a Monthly Regulatory + Queue Change Watcher and a conservative Post-NTP Lead-Time scaffold. The Watcher
-turns existing queue diffs and curated rule-source changes into a ranked, citation-grounded "what changed?" digest.
-The Post-NTP Lead-Time scaffold is an early knowledge-base demo, not a procurement product.
+The basic workflow is simple:
 
-Phase 4 adds a Time-to-Power Brief. It connects the GridQueue baseline, Flexibility Strategy Layer, and Post-NTP
-Lead-Time scaffold into a single range-based planning artifact for serial and at-risk-overlap energization scenarios.
+1. Ingest public queue files or deterministic demo fixtures.
+2. Normalize messy project names, statuses, fuels, dates, and capacities.
+3. Resolve the same project across monthly snapshots.
+4. Detect real queue changes: new, withdrawn, completed, delayed, accelerated, capacity changed, or missing.
+5. Generate a brief with citations, row counts, file hashes, and reproducibility traces.
 
-It complements power-development platforms such as Paces by focusing on the public-data layer: queue monitoring,
-change detection, historical benchmarking, source-grounded summaries, and automated quality checks. It does not copy
-parcel-level siting, permitting, proprietary diligence, power-flow studies, or upgrade-cost modeling workflows.
+The current real-data validation slice uses official ERCOT GIS monthly workbooks and the LBNL Queued Up workbook. The
+fastest way to judge the project is to inspect these files:
 
-GridQueue Agent is not a Paces clone. It does not perform proprietary siting, formal power-flow studies, permit
-submissions, procurement execution, or OEM RFQs. It focuses on public-data intelligence, flexibility strategy,
-high-stakes agent evaluation, and conservative operational monitoring.
+- `docs/REAL_DATA_VALIDATION.md`
+- `reports/real_data/ercot/real_monthly_digest_2026_04_to_2026_05.md`
+- `reports/real_data/entity_resolution_audit/ercot_matches_2026_04_to_2026_05.csv`
+- `reports/real_data/lbnl/lbnl_reproduction.md`
+
+What this proves today: the parser, normalization, entity matching, diffing, audit, and reporting stack can run against
+real public source files and preserve evidence. What it does not prove yet: a complete production SaaS, live ISO
+coverage, formal interconnection studies, or large-load/data-center queue coverage.
+
+## Public demo status
+
+This repo now has a deployable public demo shape:
+
+- `render.yaml` defines a FastAPI service and a Next.js web service.
+- `scripts/start_public_api.py` seeds deterministic demo data on startup, so visitors can test the UI without running
+  local commands.
+- The public demo is meant for product discovery and screenshots. The real-data evidence remains in the checked-in
+  reports above because raw XLSX source files are intentionally not committed.
+
+Deployment guide: `docs/PUBLIC_DEMO_DEPLOYMENT.md`
 
 ## What it does not do
 

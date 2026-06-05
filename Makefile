@@ -1,4 +1,4 @@
-.PHONY: install ingest-fixtures ingest-live-ercot ingest-lbnl seed-flex-rules seed-watch-sources run-watcher seed-lead-time-kb seed-time-to-power-fixtures time-to-power-demo real-ercot-profile real-ercot-run real-lbnl-profile real-lbnl-reproduce real-eval real-validation-report flex-demo watcher-demo counts test eval dev-api dev-web demo frontend-typecheck frontend-lint
+.PHONY: install ingest-fixtures ingest-live-ercot ingest-lbnl seed-flex-rules seed-watch-sources run-watcher seed-lead-time-kb seed-time-to-power-fixtures time-to-power-demo real-ercot-profile real-ercot-run real-lbnl-profile real-lbnl-reproduce real-eval real-validation-report public-api flex-demo watcher-demo counts test eval dev-api dev-web demo frontend-typecheck frontend-lint
 
 install:
 	python -m pip install -e "backend[dev]"
@@ -48,6 +48,9 @@ real-eval:
 
 real-validation-report:
 	python scripts/generate_real_data_validation_report.py
+
+public-api:
+	python scripts/start_public_api.py
 
 flex-demo:
 	python scripts/ingest_fixture.py

@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: gridqueue-api
+    runtime: python
+    plan: free
+    buildCommand: python -m pip install --upgrade pip && python -m pip install -e backend
+    startCommand: python scripts/start_public_api.py
+    healthCheckPath: /health
+    envVars:
+      - key: GRIDQUEUE_DB_PATH
+        value: /tmp/gridqueue-public-demo.duckdb
+      - key: GRIDQUEUE_PUBLIC_DEMO_SEED
+        value: "true"
+      - key: GRIDQUEUE_CORS_ORIGINS
+        value: https://gridqueue-web.onrender.com
+
+  - type: web
+    name: gridqueue-web
+    runtime: node
+    rootDir: frontend
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: BACKEND_API_HOST
+        fromService:
+          name: gridqueue-api
+          type: web
+          property: host
+      - key: BACKEND_API_PORT
+        fromService:
+          name: gridqueue-api
+          type: web
+          property: port
