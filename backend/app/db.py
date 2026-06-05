@@ -14,6 +14,20 @@ _SCHEMA_LOCK = RLock()
 
 TABLES: tuple[str, ...] = (
     "sources",
+    "watch_sources",
+    "source_snapshots",
+    "change_events",
+    "digests",
+    "lead_time_sources",
+    "equipment_lead_times",
+    "project_equipment_scope_models",
+    "procurement_timeline_estimates",
+    "commissioning_assumptions",
+    "time_to_power_scenarios",
+    "time_to_power_components",
+    "procurement_critical_path_results",
+    "time_to_power_estimates",
+    "time_to_power_briefs",
     "iso_flexibility_rules",
     "flexibility_rule_sources",
     "compute_cost_assumptions",
@@ -50,6 +64,294 @@ def init_database(db_path: str | Path | None = None) -> None:
               retrieved_at TIMESTAMP,
               publication_date DATE,
               notes TEXT
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS watch_sources (
+              watch_source_id TEXT PRIMARY KEY,
+              source_name TEXT NOT NULL,
+              source_type TEXT NOT NULL,
+              jurisdiction TEXT NOT NULL,
+              source_url TEXT NOT NULL,
+              parser_type TEXT NOT NULL,
+              watch_frequency TEXT NOT NULL,
+              is_active BOOLEAN NOT NULL,
+              last_snapshot_id TEXT,
+              last_content_hash TEXT,
+              last_checked_at TIMESTAMP,
+              notes TEXT,
+              created_at TIMESTAMP NOT NULL,
+              updated_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS source_snapshots (
+              source_snapshot_id TEXT PRIMARY KEY,
+              watch_source_id TEXT NOT NULL,
+              retrieved_at TIMESTAMP NOT NULL,
+              publication_date DATE,
+              content_hash TEXT NOT NULL,
+              content_text TEXT NOT NULL,
+              raw_payload_json JSON NOT NULL,
+              parse_status TEXT NOT NULL,
+              parse_error TEXT,
+              created_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS change_events (
+              change_event_id TEXT PRIMARY KEY,
+              event_domain TEXT NOT NULL,
+              event_type TEXT NOT NULL,
+              jurisdiction TEXT,
+              market TEXT,
+              entity_or_provision TEXT,
+              entity_id TEXT,
+              rule_id TEXT,
+              source_snapshot_id TEXT,
+              from_snapshot_id TEXT,
+              to_snapshot_id TEXT,
+              source_url TEXT,
+              before_json JSON NOT NULL,
+              after_json JSON NOT NULL,
+              materiality_score DOUBLE NOT NULL,
+              confidence DOUBLE NOT NULL,
+              is_ambiguous BOOLEAN NOT NULL,
+              is_hard_alert BOOLEAN NOT NULL,
+              explanation TEXT NOT NULL,
+              citation_ids_json JSON NOT NULL,
+              detected_at TIMESTAMP NOT NULL,
+              created_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS digests (
+              digest_id TEXT PRIMARY KEY,
+              digest_type TEXT NOT NULL,
+              period_start DATE NOT NULL,
+              period_end DATE NOT NULL,
+              title TEXT NOT NULL,
+              markdown_path TEXT NOT NULL,
+              digest_json JSON NOT NULL,
+              top_event_ids_json JSON NOT NULL,
+              generated_at TIMESTAMP NOT NULL,
+              created_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS lead_time_sources (
+              lead_time_source_id TEXT PRIMARY KEY,
+              source_name TEXT NOT NULL,
+              source_url TEXT NOT NULL,
+              source_type TEXT NOT NULL,
+              publication_date DATE,
+              retrieved_at TIMESTAMP NOT NULL,
+              content_hash TEXT NOT NULL,
+              notes TEXT,
+              created_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS equipment_lead_times (
+              lead_time_id TEXT PRIMARY KEY,
+              equipment_class TEXT NOT NULL,
+              voltage_or_rating_band TEXT NOT NULL,
+              lead_time_low_months DOUBLE NOT NULL,
+              lead_time_high_months DOUBLE NOT NULL,
+              as_of_date DATE NOT NULL,
+              source_id TEXT NOT NULL,
+              source_url TEXT NOT NULL,
+              source_type TEXT NOT NULL,
+              confidence TEXT NOT NULL,
+              is_stale BOOLEAN NOT NULL,
+              stale_threshold_months INTEGER NOT NULL,
+              notes TEXT,
+              created_at TIMESTAMP NOT NULL,
+              updated_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS project_equipment_scope_models (
+              scope_model_id TEXT PRIMARY KEY,
+              project_type TEXT NOT NULL,
+              size_mw_low DOUBLE NOT NULL,
+              size_mw_high DOUBLE NOT NULL,
+              interconnection_voltage_low_kv DOUBLE,
+              interconnection_voltage_high_kv DOUBLE,
+              likely_equipment_json JSON NOT NULL,
+              assumptions_json JSON NOT NULL,
+              confidence TEXT NOT NULL,
+              notes TEXT,
+              created_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS procurement_timeline_estimates (
+              procurement_timeline_id TEXT PRIMARY KEY,
+              project_type TEXT NOT NULL,
+              size_mw DOUBLE NOT NULL,
+              interconnection_voltage_kv DOUBLE,
+              scope_model_id TEXT,
+              lead_time_rows_json JSON NOT NULL,
+              critical_path_equipment_class TEXT NOT NULL,
+              timeline_low_months DOUBLE NOT NULL,
+              timeline_high_months DOUBLE NOT NULL,
+              confidence TEXT NOT NULL,
+              caveats_json JSON NOT NULL,
+              citations_json JSON NOT NULL,
+              created_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS commissioning_assumptions (
+              commissioning_assumption_id TEXT PRIMARY KEY,
+              assumption_name TEXT NOT NULL,
+              version TEXT NOT NULL,
+              default_commissioning_low_days DOUBLE NOT NULL,
+              default_commissioning_high_days DOUBLE NOT NULL,
+              energization_buffer_low_days DOUBLE NOT NULL,
+              energization_buffer_high_days DOUBLE NOT NULL,
+              source_type TEXT NOT NULL,
+              source_url TEXT NOT NULL,
+              as_of_date DATE NOT NULL,
+              confidence TEXT NOT NULL,
+              notes TEXT,
+              created_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS time_to_power_scenarios (
+              scenario_id TEXT PRIMARY KEY,
+              scenario_name TEXT NOT NULL,
+              market TEXT NOT NULL,
+              jurisdiction TEXT NOT NULL,
+              county TEXT,
+              region TEXT,
+              project_type TEXT NOT NULL,
+              peak_mw DOUBLE NOT NULL,
+              average_load_factor DOUBLE NOT NULL,
+              interconnection_voltage_kv DOUBLE,
+              target_online_year INTEGER,
+              target_online_date DATE,
+              flexibility_scenario_id TEXT,
+              selected_tradeoff_id TEXT,
+              procurement_strategy TEXT NOT NULL,
+              procurement_start_assumption TEXT NOT NULL,
+              commissioning_assumption_id TEXT,
+              equipment_scope_mode TEXT NOT NULL,
+              manual_equipment_scope_json JSON NOT NULL,
+              created_at TIMESTAMP NOT NULL,
+              updated_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS time_to_power_components (
+              component_id TEXT PRIMARY KEY,
+              scenario_id TEXT NOT NULL,
+              component_type TEXT NOT NULL,
+              component_name TEXT NOT NULL,
+              low_days DOUBLE,
+              high_days DOUBLE,
+              confidence TEXT NOT NULL,
+              source_type TEXT NOT NULL,
+              source_id TEXT,
+              source_url TEXT,
+              citation_ids_json JSON NOT NULL,
+              assumptions_json JSON NOT NULL,
+              caveats_json JSON NOT NULL,
+              created_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS procurement_critical_path_results (
+              critical_path_id TEXT PRIMARY KEY,
+              scenario_id TEXT NOT NULL,
+              equipment_scope_json JSON NOT NULL,
+              lead_time_rows_json JSON NOT NULL,
+              binding_equipment_class TEXT,
+              binding_lead_time_low_months DOUBLE,
+              binding_lead_time_high_months DOUBLE,
+              procurement_low_days DOUBLE,
+              procurement_high_days DOUBLE,
+              confidence TEXT NOT NULL,
+              stale_flag BOOLEAN NOT NULL,
+              conflict_flag BOOLEAN NOT NULL,
+              unsupported_flag BOOLEAN NOT NULL,
+              citations_json JSON NOT NULL,
+              assumptions_json JSON NOT NULL,
+              caveats_json JSON NOT NULL,
+              created_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS time_to_power_estimates (
+              estimate_id TEXT PRIMARY KEY,
+              scenario_id TEXT NOT NULL,
+              baseline_metric_id TEXT,
+              flexibility_tradeoff_id TEXT,
+              critical_path_id TEXT,
+              commissioning_assumption_id TEXT,
+              no_flex_serial_low_days DOUBLE,
+              no_flex_serial_high_days DOUBLE,
+              flex_serial_low_days DOUBLE,
+              flex_serial_high_days DOUBLE,
+              no_flex_overlap_low_days DOUBLE,
+              no_flex_overlap_high_days DOUBLE,
+              flex_overlap_low_days DOUBLE,
+              flex_overlap_high_days DOUBLE,
+              selected_case TEXT NOT NULL,
+              binding_constraint TEXT NOT NULL,
+              confidence TEXT NOT NULL,
+              status TEXT NOT NULL,
+              status_explanation TEXT NOT NULL,
+              citations_json JSON NOT NULL,
+              assumptions_json JSON NOT NULL,
+              reproducibility_trace_json JSON NOT NULL,
+              created_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS time_to_power_briefs (
+              brief_id TEXT PRIMARY KEY,
+              scenario_id TEXT NOT NULL,
+              estimate_id TEXT NOT NULL,
+              title TEXT NOT NULL,
+              brief_json JSON NOT NULL,
+              markdown_path TEXT NOT NULL,
+              citations_json JSON NOT NULL,
+              assumptions_json JSON NOT NULL,
+              caveats_json JSON NOT NULL,
+              reproducibility_trace_json JSON NOT NULL,
+              generated_at TIMESTAMP NOT NULL,
+              created_at TIMESTAMP NOT NULL
             )
             """
         )

@@ -1,0 +1,5 @@
+{
+  "counties": ["Reeves"],
+  "markets": ["ERCOT"],
+  "jurisdictions": ["FERC", "SPP"]
+}

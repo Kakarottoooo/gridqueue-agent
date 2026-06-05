@@ -8,9 +8,20 @@ Public Interconnection Risk Briefs.
 Phase 2 adds a Flexibility Strategy Layer for large-load planning. It evaluates whether a proposed curtailable-load
 commitment is worth considering under public FERC/ISO/RTO context and explicit compute-cost assumptions.
 
+Phase 3 adds a Monthly Regulatory + Queue Change Watcher and a conservative Post-NTP Lead-Time scaffold. The Watcher
+turns existing queue diffs and curated rule-source changes into a ranked, citation-grounded "what changed?" digest.
+The Post-NTP Lead-Time scaffold is an early knowledge-base demo, not a procurement product.
+
+Phase 4 adds a Time-to-Power Brief. It connects the GridQueue baseline, Flexibility Strategy Layer, and Post-NTP
+Lead-Time scaffold into a single range-based planning artifact for serial and at-risk-overlap energization scenarios.
+
 It complements power-development platforms such as Paces by focusing on the public-data layer: queue monitoring,
 change detection, historical benchmarking, source-grounded summaries, and automated quality checks. It does not copy
 parcel-level siting, permitting, proprietary diligence, power-flow studies, or upgrade-cost modeling workflows.
+
+GridQueue Agent is not a Paces clone. It does not perform proprietary siting, formal power-flow studies, permit
+submissions, procurement execution, or OEM RFQs. It focuses on public-data intelligence, flexibility strategy,
+high-stakes agent evaluation, and conservative operational monitoring.
 
 ## What it does not do
 
@@ -20,6 +31,8 @@ parcel-level siting, permitting, proprietary diligence, power-flow studies, or u
 - It does not report rates from samples that are too small; it rolls up or abstains.
 - The Flexibility Strategy Layer does not execute curtailment, schedule GPU workloads, submit interconnection filings,
   provide legal advice, estimate real upgrade costs, or guarantee approval.
+- The Monthly Watcher does not fabricate changes when parsing fails or when entity matching is ambiguous.
+- The Post-NTP Lead-Time scaffold is an early knowledge-base demo, not a procurement product.
 
 ## Architecture
 
@@ -43,6 +56,14 @@ graph TD
   G --> L
   G --> M["Flexibility Strategy Layer"]
   M --> J
+  F --> N["Monthly Watcher"]
+  M --> N
+  N --> J
+  O["Post-NTP Lead-Time Scaffold"] --> J
+  J --> P["Time-to-Power Brief"]
+  O --> P
+  M --> P
+  G --> P
 ```
 
 ## Data sources
@@ -51,6 +72,7 @@ graph TD
 - ERCOT Large Load Update, April 9 2026: https://www.ercot.com/files/docs/2026/04/09/ERCOTLargeLoadUpdate-April9HouseStateAffairsHearing.pdf
 - LBNL Queued Up: https://emp.lbl.gov/queues
 - gridstatus queue docs: https://opensource.gridstatus.io/en/latest/interconnection_queues.html
+- DOE Large Power Transformer Resilience Report: https://www.energy.gov/sites/default/files/2024-10/EXEC-2022-001242%20-%20Large%20Power%20Transformer%20Resilience%20Report%20signed%20by%20Secretary%20Granholm%20on%207-10-24.pdf
 
 The default demo uses synthetic fixtures under `data/fixtures`. They are clearly marked synthetic and are not market facts.
 
@@ -62,6 +84,11 @@ make ingest-fixtures
 make test
 make eval
 make seed-flex-rules
+make seed-watch-sources
+make run-watcher
+make seed-lead-time-kb
+make seed-time-to-power-fixtures
+make time-to-power-demo
 make dev-api
 make dev-web
 ```
@@ -79,6 +106,11 @@ python -m pip install -e backend[dev]
 cd frontend; npm install; cd ..
 python scripts/ingest_fixture.py
 python scripts/seed_flexibility_rules.py
+python scripts/seed_watch_sources.py
+python scripts/run_monthly_watcher.py --mode fixture --period 2026-05
+python scripts/seed_lead_time_kb.py
+python scripts/seed_time_to_power_fixtures.py
+python scripts/run_time_to_power_demo.py
 python -m pytest backend/tests
 python evals/run_evals.py
 python -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000 --reload
@@ -155,6 +187,119 @@ result contingent.
 
 See `docs/FLEXIBILITY_STRATEGY.md`, `docs/FLEXIBILITY_RULES.md`, and `docs/COMPUTE_COST_MODEL.md`.
 
+## Phase 3: Monthly Watcher
+
+The Monthly Regulatory + Queue Change Watcher answers: what materially changed this month in queues and in the public
+rules that affect them?
+
+Run it locally:
+
+```powershell
+python scripts/run_monthly_watcher.py --mode fixture --period 2026-05
+```
+
+New endpoints:
+
+- `GET /watcher/sources`
+- `POST /watcher/sources/seed`
+- `POST /watcher/run`
+- `POST /watcher/queue-adapter`
+- `POST /watcher/regulatory-snapshot`
+- `POST /watcher/digest`
+- `GET /watcher/digests`
+- `GET /watcher/digests/latest`
+- `GET /watcher/change-events`
+
+The UI has a `Watcher` tab. Fixture mode generates a digest from existing queue diffs, curated source hash changes,
+flexibility rule records, suppressed ambiguous matches, parse failures, citations, and reproducibility trace.
+
+See `docs/WATCHER.md`.
+
+## Post-NTP Lead-Time Scaffold
+
+The Post-NTP Lead-Time scaffold is an early knowledge-base demo, not a procurement product. It seeds a cited,
+range-based Large Power Transformer lead-time row from a government-report source and exposes it through:
+
+- `POST /procurement/lead-times/seed`
+- `GET /procurement/lead-times`
+
+Seed it locally:
+
+```powershell
+python scripts/seed_lead_time_kb.py
+```
+
+See `docs/POST_NTP_LEAD_TIME.md`.
+
+## Phase 4: Time-to-Power Brief
+
+The Time-to-Power Brief combines:
+
+- GridQueue sample-aware interconnection baseline;
+- Flexibility Strategy rule status, eligibility, compute-cost assumptions, and benefit status;
+- Post-NTP lead-time critical path;
+- commissioning and energization-buffer assumptions.
+
+Run the fixture demo:
+
+```powershell
+python scripts/run_time_to_power_demo.py
+```
+
+Windows fallback is the same command. The script writes:
+
+- `briefs/time_to_power/latest.md`
+
+API example:
+
+```powershell
+Invoke-RestMethod -Method Post http://127.0.0.1:8000/time-to-power/brief -ContentType application/json -Body '{
+  "market": "ERCOT",
+  "jurisdiction": "FERC",
+  "county": "Reeves",
+  "project_type": "AI data center load",
+  "peak_mw": 300,
+  "interconnection_voltage_kv": 345,
+  "target_online_year": 2029,
+  "commitment_depth_pct": 20,
+  "event_duration_hours": 3,
+  "events_per_year": 20,
+  "procurement_strategy": "post_ntp_serial",
+  "min_sample_n": 2
+}'
+```
+
+Endpoints:
+
+- `GET /time-to-power/health`
+- `POST /time-to-power/fixtures/seed`
+- `POST /time-to-power/scenarios`
+- `GET /time-to-power/scenarios/{scenario_id}`
+- `POST /time-to-power/equipment-scope`
+- `POST /time-to-power/procurement-critical-path`
+- `POST /time-to-power/interconnection-baseline`
+- `POST /time-to-power/flex-adjusted`
+- `POST /time-to-power/estimate`
+- `POST /time-to-power/brief`
+- `GET /time-to-power/briefs/latest`
+- `GET /time-to-power/briefs/{brief_id}`
+- `POST /time-to-power/demo`
+
+UI walkthrough:
+
+1. Ingest fixtures.
+2. Seed flexibility rules and lead-time KB if desired, or use `Seed TTP fixtures`.
+3. Set project type, peak MW, voltage, jurisdiction, flexibility commitment, procurement strategy, and assumptions.
+4. Click `Generate TTP brief`.
+5. Inspect the Time to Power tab for baseline metric, flexibility status, procurement critical path, timeline ranges,
+   citations, assumptions, caveats, and markdown path.
+
+The required caveat is explicit: the brief is not a formal interconnection study, deliverability study, power-flow
+result, legal opinion, engineering design, procurement quote, OEM RFQ, commissioning plan, financial forecast, or
+guarantee of energization.
+
+See `docs/TIME_TO_POWER_BRIEF.md`, `docs/PROCUREMENT_CRITICAL_PATH.md`, and `docs/TIME_TO_POWER_MATH.md`.
+
 ## Entity resolution
 
 The matcher is deterministic and explainable. It scores exact queue IDs, normalized name similarity, interconnecting
@@ -181,9 +326,9 @@ Sample output:
 
 ```json
 {
-  "passed": 26,
+  "passed": 66,
   "failed": 0,
-  "total": 26
+  "total": 66
 }
 ```
 
@@ -207,6 +352,11 @@ Calling those scripts without a file prints manual-download instructions.
 - Frontend build: `cd frontend && npm run build`
 - Dependency audit: `cd frontend && npm audit --audit-level=moderate`
 - Flexibility seed: `python scripts/seed_flexibility_rules.py`
+- Watcher source seed: `python scripts/seed_watch_sources.py`
+- Watcher digest: `python scripts/run_monthly_watcher.py --mode fixture --period 2026-05`
+- Lead-time KB seed: `python scripts/seed_lead_time_kb.py`
+- Time-to-Power fixture seed: `python scripts/seed_time_to_power_fixtures.py`
+- Time-to-Power demo: `python scripts/run_time_to_power_demo.py`
 
 ## Demo screenshots
 
@@ -222,6 +372,10 @@ inspect the current fixture-backed demo.
 - Flexibility rule seeds require manual verification before real-world use; FERC/PJM pending or directed records are not
   treated as final benefits.
 - Compute-cost penalty values are scenario assumptions, not observed market prices or legal/financial advice.
+- Watcher live mode is conservative and local-first; fixture mode is the default verification path.
+- Lead-time data is public-source range data and can become stale; it is not a quote or supplier commitment.
+- Time-to-Power is a public-data planning artifact; it is not a formal study, engineering design, procurement quote,
+  commissioning plan, financial forecast, or guarantee of energization.
 
 ## Roadmap
 
@@ -231,3 +385,6 @@ inspect the current fixture-backed demo.
 - Add optional LLM polishing constrained to deterministic facts and citations.
 - Add Docker Compose and hosted preview deployment.
 - Add human review workflow for flexibility rule/status verification.
+- Add reviewed production source snapshots and notification delivery for monthly watcher digests.
+- Expand the Post-NTP scaffold into a critical-path model only after source coverage is stronger.
+- Expand Time-to-Power source coverage with reviewed production lead-time rows and project-specific assumption review.

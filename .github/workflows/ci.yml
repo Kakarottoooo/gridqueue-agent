@@ -26,6 +26,15 @@ jobs:
       - name: Seed flexibility rules
         run: python scripts/seed_flexibility_rules.py
 
+      - name: Seed watcher sources
+        run: python scripts/seed_watch_sources.py
+
+      - name: Seed lead-time KB
+        run: python scripts/seed_lead_time_kb.py
+
+      - name: Seed Time-to-Power fixtures
+        run: python scripts/seed_time_to_power_fixtures.py
+
       - name: Run backend tests
         run: python -m pytest backend/tests
 

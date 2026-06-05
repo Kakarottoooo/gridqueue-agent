@@ -12,6 +12,14 @@ Phase 2 adds a Flexibility Strategy Layer for large-load planning. It evaluates 
 curtailable-load eligibility, compute-side curtailment cost, and whether any interconnection benefit should be treated
 as quantified, qualitative, contingent, unsupported, or abstained.
 
+Phase 3 adds a Monthly Regulatory + Queue Change Watcher that turns queue diffs, curated regulatory source diffs, and
+flexibility-rule records into a ranked "what changed?" digest. It also adds a conservative Post-NTP Lead-Time scaffold
+for one equipment class, Large Power Transformers.
+
+Phase 4 adds a Time-to-Power Brief that connects the GridQueue baseline, Flexibility Strategy Layer, and Post-NTP
+Lead-Time scaffold into one range-based planning artifact. It estimates serial and at-risk-overlap energization
+timelines from public-data proxies, explicit assumptions, citations, and caveats.
+
 ## What this project does not do
 
 - It does not replace a formal interconnection study, deliverability study, power-flow result, or upgrade-cost estimate.
@@ -21,6 +29,10 @@ as quantified, qualitative, contingent, unsupported, or abstained.
 - It does not hide ambiguous entity matches behind a single forced answer.
 - It does not execute load curtailment, schedule GPU workloads, provide legal/financial advice, or guarantee that a
   flexible load will receive faster approval.
+- It does not fabricate monthly watcher changes when source parsing fails or entity matching is ambiguous.
+- It does not provide procurement quotes, prices, OEM rankings, RFQ workflow, or guaranteed lead times.
+- It does not provide a guaranteed Time-to-Power date, engineering design, OEM RFQ, commissioning plan, financial
+  forecast, or guarantee of energization.
 
 ## Domain safety and abstention rules
 
@@ -39,3 +51,6 @@ as quantified, qualitative, contingent, unsupported, or abstained.
 4. Generate a Public Interconnection Risk Brief.
 5. Inspect monthly diff events, entity match evidence, metric fallback, citations, and eval results.
 6. Optionally seed flexibility rules and generate a Flexibility Strategy Brief for a large-load curtailment scenario.
+7. Optionally seed watcher sources and generate a Monthly Watcher digest.
+8. Optionally seed the Large Power Transformer lead-time KB scaffold and inspect cited range rows.
+9. Optionally seed Time-to-Power fixtures and generate a complete Time-to-Power Brief.
