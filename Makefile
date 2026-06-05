@@ -1,4 +1,4 @@
-.PHONY: install ingest-fixtures ingest-live-ercot ingest-lbnl seed-flex-rules seed-watch-sources run-watcher seed-lead-time-kb flex-demo watcher-demo counts test eval dev-api dev-web demo frontend-typecheck frontend-lint
+.PHONY: install ingest-fixtures ingest-live-ercot ingest-lbnl seed-flex-rules seed-watch-sources run-watcher seed-lead-time-kb seed-time-to-power-fixtures time-to-power-demo flex-demo watcher-demo counts test eval dev-api dev-web demo frontend-typecheck frontend-lint
 
 install:
 	python -m pip install -e "backend[dev]"
@@ -25,6 +25,12 @@ run-watcher:
 seed-lead-time-kb:
 	python scripts/seed_lead_time_kb.py
 
+seed-time-to-power-fixtures:
+	python scripts/seed_time_to_power_fixtures.py
+
+time-to-power-demo:
+	python scripts/run_time_to_power_demo.py
+
 flex-demo:
 	python scripts/ingest_fixture.py
 	python scripts/seed_flexibility_rules.py
@@ -35,6 +41,7 @@ watcher-demo:
 	python scripts/seed_watch_sources.py
 	python scripts/run_monthly_watcher.py --mode fixture --period 2026-05
 	python scripts/seed_lead_time_kb.py
+	python scripts/seed_time_to_power_fixtures.py
 
 counts:
 	python scripts/print_counts.py

@@ -78,3 +78,22 @@ project-specific. V1 stores cited ranges with recency and confidence metadata fo
 creating a procurement product.
 
 No firm quotes, prices, OEM ranking, RFQ workflow, or guaranteed delivery timeline are implemented.
+
+## Time-to-Power Brief
+
+Time-to-Power is an integration layer, not a new standalone product. It depends on GridQueue metric rollups,
+Flexibility Strategy statuses, and Post-NTP lead-time rows, so duplicating those systems would create drift and weaker
+provenance.
+
+Procurement data is treated as weaker than queue data because public lead-time ranges are non-uniform, often stale,
+and not project-specific. The critical path therefore preserves source rows, flags stale/conflicting data, and avoids
+quotes, prices, or vendor recommendations.
+
+Ranges are required because neither queue duration proxies nor equipment lead times support precise promises. The
+engine stores low/high days and all constants, including `days_per_month = 30.4375`, in assumptions.
+
+Proposed, pending, directed, context-only, and technical-evidence flexibility records remain contingent or unsupported.
+They can shape planning context but do not become final quantified timeline reductions.
+
+The default procurement strategy is `post_ntp_serial` because it is the conservative planning assumption. At-risk
+overlap is optional and heavily caveated because early procurement can strand spend if interconnection outcomes change.

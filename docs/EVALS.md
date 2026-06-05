@@ -80,3 +80,29 @@ Watcher and lead-time scaffold categories.
 
 The latest report separates `gridqueue_core`, `flexibility_strategy`, `monthly_watcher`, and `lead_time_scaffold`
 categories.
+
+## Time-to-Power cases
+
+1. Baseline timeline includes metric_id, sample_n, fallback_level, and confidence.
+2. Insufficient baseline sample triggers abstention.
+3. Proposed/pending flexibility rule remains contingent.
+4. Technical evidence is not treated as regulation.
+5. Flexibility does not reduce procurement lead time by default.
+6. Procurement lead times are ranges, never bare point claims.
+7. Every procurement lead time has source_url and as_of_date.
+8. Stale lead-time source triggers a stale warning.
+9. Conflicting lead-time sources trigger conflict flag and are not collapsed into fake precision.
+10. Critical path chooses binding equipment by highest high-end lead time.
+11. Serial timeline math is correct.
+12. Overlap timeline math is correct.
+13. At-risk overlap strategy includes explicit caveat.
+14. Time-to-Power Brief includes the required caveat.
+15. Every key number in the brief has provenance.
+16. Brief does not claim guaranteed energization or interconnection approval.
+17. Fixture demo runs end-to-end.
+18. Existing GridQueue core evals still pass.
+19. Existing Flexibility Strategy evals still pass.
+20. Existing Watcher evals still pass.
+
+The latest report separates `gridqueue_core`, `flexibility_strategy`, `monthly_watcher`, `lead_time_scaffold`, and
+`time_to_power` categories. The current fixture suite contains 66 deterministic eval cases.

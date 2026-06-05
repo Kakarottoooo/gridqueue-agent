@@ -77,6 +77,21 @@
 - Watcher status: Used in fixture mode so tests and evals do not require live web access.
 - Caveat: Synthetic watcher fixtures are not regulatory facts.
 
+## Time-to-Power fixture lead-time rows
+
+- URL: `synthetic://gridqueue-agent/fixtures/time-to-power-lead-times`
+- Role: Offline deterministic critical-path fixture rows for HV switchgear / GIS, medium-voltage switchgear, and GSU
+  transformer planning ranges.
+- Phase 4 status: Synthetic fixture only. Used to test stale/conflict flags and binding-equipment math.
+- Caveat: These values are not market facts, quotes, supplier commitments, or engineering design.
+
+## Time-to-Power commissioning assumption
+
+- URL: `synthetic://gridqueue-agent/fixtures/time-to-power-commissioning`
+- Role: Offline deterministic commissioning and energization-buffer assumption row.
+- Phase 4 status: Synthetic fixture only.
+- Caveat: This is not a commissioning plan, EPC schedule, or energization guarantee.
+
 ## Manual ingestion fallback
 
 If automatic source download is blocked or a public website changes, use:
