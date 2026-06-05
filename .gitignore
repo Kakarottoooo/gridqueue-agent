@@ -6,6 +6,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.tsbuildinfo
 *.duckdb
 *.duckdb.wal
 backend/*.egg-info/
@@ -19,4 +20,3 @@ data/processed/*
 !data/processed/.gitkeep
 evals/results/*
 !evals/results/.gitkeep
-
