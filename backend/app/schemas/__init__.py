@@ -9,6 +9,14 @@ from app.schemas.api import (
     FlexibilityTradeoffResponse,
     IngestManualRequest,
     MetricsRequest,
+    ProcurementLeadTimesResponse,
+    WatcherChangeEventsResponse,
+    WatcherDigestRequest,
+    WatcherDigestsResponse,
+    WatcherQueueAdapterRequest,
+    WatcherRegulatorySnapshotRequest,
+    WatcherRunRequest,
+    WatcherSourcesResponse,
 )
 
 __all__ = [
@@ -22,4 +30,12 @@ __all__ = [
     "FlexibilityTradeoffResponse",
     "IngestManualRequest",
     "MetricsRequest",
+    "ProcurementLeadTimesResponse",
+    "WatcherChangeEventsResponse",
+    "WatcherDigestRequest",
+    "WatcherDigestsResponse",
+    "WatcherQueueAdapterRequest",
+    "WatcherRegulatorySnapshotRequest",
+    "WatcherRunRequest",
+    "WatcherSourcesResponse",
 ]

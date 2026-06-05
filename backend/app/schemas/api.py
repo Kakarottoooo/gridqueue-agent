@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field
@@ -82,6 +83,49 @@ class FlexibilityTradeoffResponse(BaseModel):
 
 class FlexibilityBriefResponse(BaseModel):
     brief: dict[str, Any]
+
+
+class WatcherRunRequest(BaseModel):
+    mode: Literal["fixture", "manual", "live"] = "fixture"
+    period_start: date = date(2026, 5, 1)
+    period_end: date = date(2026, 5, 31)
+    market: str = "ERCOT"
+    from_snapshot_id: str | None = None
+    to_snapshot_id: str | None = None
+    top_n: int = Field(default=10, ge=1, le=50)
+
+
+class WatcherQueueAdapterRequest(BaseModel):
+    market: str = "ERCOT"
+    from_snapshot_id: str
+    to_snapshot_id: str
+
+
+class WatcherRegulatorySnapshotRequest(BaseModel):
+    mode: Literal["fixture", "manual", "live"] = "fixture"
+    fixture_variant: str = "current"
+
+
+class WatcherDigestRequest(BaseModel):
+    period_start: date = date(2026, 5, 1)
+    period_end: date = date(2026, 5, 31)
+    top_n: int = Field(default=10, ge=1, le=50)
+
+
+class WatcherSourcesResponse(BaseModel):
+    sources: list[dict[str, Any]]
+
+
+class WatcherChangeEventsResponse(BaseModel):
+    change_events: list[dict[str, Any]]
+
+
+class WatcherDigestsResponse(BaseModel):
+    digests: list[dict[str, Any]]
+
+
+class ProcurementLeadTimesResponse(BaseModel):
+    lead_times: list[dict[str, Any]]
 
 
 class ApiResponse(BaseModel):
