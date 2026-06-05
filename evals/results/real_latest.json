@@ -1,0 +1,1039 @@
+{
+  "categories": {
+    "entity_resolution_human_labels": [
+      {
+        "case_id": "entity_11",
+        "category": "entity_resolution_human_labels",
+        "details": {
+          "manual_label_count": 0
+        },
+        "message": "No human manual labels are present; precision eval is skipped, not passed.",
+        "name": "Manual labels are evaluated or skipped honestly",
+        "status": "skipped_manual_review"
+      }
+    ],
+    "ercot_real_diff": [
+      {
+        "case_id": "ercot_diff_05",
+        "category": "ercot_real_diff",
+        "details": {
+          "sample": [
+            {
+              "before_after": {
+                "target_cod": {
+                  "after": "2028-09-13",
+                  "before": "2027-07-01",
+                  "delta_days": 440
+                }
+              },
+              "capacity_mw": 512.6,
+              "confidence": 1.0,
+              "county_or_region": "La Salle",
+              "event_type": "target_cod_delayed",
+              "explanation": "Target COD moved later by 440 days, above the 90-day threshold.",
+              "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+              "is_ambiguous": false,
+              "is_hard_alert": true,
+              "materiality_score": 77.0978,
+              "project_or_entity_name": "La Salle Solar",
+              "source_file_hash_after": "31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+              "source_file_hash_before": "bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+              "source_url": "https://www.ercot.com/mp/data-products/data-product-details?id=PG7-200-ER",
+              "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596",
+              "trace_id": "chg_41f6ad6dfaa94095"
+            },
+            {
+              "before_after": {
+                "target_cod": {
+                  "after": "2030-05-30",
+                  "before": "2027-05-23",
+                  "delta_days": 1103
+                }
+              },
+              "capacity_mw": 450.0,
+              "confidence": 1.0,
+              "county_or_region": "Guadalupe",
+              "event_type": "target_cod_delayed",
+              "explanation": "Target COD moved later by 1103 days, above the 90-day threshold.",
+              "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+              "is_ambiguous": false,
+              "is_hard_alert": true,
+              "materiality_score": 76.5321,
+              "project_or_entity_name": "Calpine Guadalupe Peakers",
+              "source_file_hash_after": "31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+              "source_file_hash_before": "bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+              "source_url": "https://www.ercot.com/mp/data-products/data-product-details?id=PG7-200-ER",
+              "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596",
+              "trace_id": "chg_093b5bd99c8a4e94"
+            },
+            {
+              "before_after": {
+                "target_cod": {
+                  "after": "2029-04-30",
+                  "before": "2027-05-01",
+                  "delta_days": 730
+                }
+              },
+              "capacity_mw": 438.75,
+              "confidence": 1.0,
+              "county_or_region": "Wilbarger",
+              "event_type": "target_cod_delayed",
+              "explanation": "Target COD moved later by 730 days, above the 90-day threshold.",
+              "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+              "is_ambiguous": false,
+              "is_hard_alert": true,
+              "materiality_score": 76.4222,
+              "project_or_entity_name": "Poco Trail Solar",
+              "source_file_hash_after": "31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+              "source_file_hash_before": "bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+              "source_url": "https://www.ercot.com/mp/data-products/data-product-details?id=PG7-200-ER",
+              "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596",
+              "trace_id": "chg_92d86fd2131c4452"
+            }
+          ]
+        },
+        "message": "Top traceable events=20",
+        "name": "Digest top events have snapshot IDs and file hashes",
+        "status": "passed"
+      },
+      {
+        "case_id": "ercot_diff_06",
+        "category": "ercot_real_diff",
+        "details": {
+          "bad": [],
+          "count": 2
+        },
+        "message": "Ambiguous digest rows are not hard alerts.",
+        "name": "Ambiguous events are not hard alerts",
+        "status": "passed"
+      },
+      {
+        "case_id": "ercot_diff_07",
+        "category": "ercot_real_diff",
+        "details": {
+          "new_same_id": []
+        },
+        "message": "Exact INR matches=1996",
+        "name": "Stable exact INR matches are not counted as new",
+        "status": "passed"
+      },
+      {
+        "case_id": "ercot_diff_08",
+        "category": "ercot_real_diff",
+        "details": {
+          "sample": [
+            {
+              "before_after": {
+                "before_project_name": "Pinnington Solar"
+              },
+              "capacity_mw": 653.7,
+              "confidence": 1.0,
+              "county_or_region": "Jack",
+              "event_type": "removed_project",
+              "explanation": "Project entity appears in the earlier snapshot but has no non-ambiguous later match; this is a removed/missing-from-later-snapshot signal, not automatic withdrawal evidence.",
+              "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+              "is_ambiguous": false,
+              "is_hard_alert": true,
+              "materiality_score": 63.1538,
+              "project_or_entity_name": "Pinnington Solar",
+              "source_file_hash_after": "31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+              "source_file_hash_before": "bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+              "source_url": "https://www.ercot.com/mp/data-products/data-product-details?id=PG7-200-ER",
+              "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596",
+              "trace_id": "chg_08b32a5f66dd4286"
+            },
+            {
+              "before_after": {
+                "before_project_name": "Elmax Power Station"
+              },
+              "capacity_mw": 518.83,
+              "confidence": 1.0,
+              "county_or_region": "Harris",
+              "event_type": "removed_project",
+              "explanation": "Project entity appears in the earlier snapshot but has no non-ambiguous later match; this is a removed/missing-from-later-snapshot signal, not automatic withdrawal evidence.",
+              "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+              "is_ambiguous": false,
+              "is_hard_alert": true,
+              "materiality_score": 62.1503,
+              "project_or_entity_name": "Elmax Power Station",
+              "source_file_hash_after": "31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+              "source_file_hash_before": "bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+              "source_url": "https://www.ercot.com/mp/data-products/data-product-details?id=PG7-200-ER",
+              "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596",
+              "trace_id": "chg_64584c5922c240bd"
+            },
+            {
+              "before_after": {
+                "before_project_name": "TRIFECTA Gas"
+              },
+              "capacity_mw": 453.0,
+              "confidence": 1.0,
+              "county_or_region": "Midland",
+              "event_type": "removed_project",
+              "explanation": "Project entity appears in the earlier snapshot but has no non-ambiguous later match; this is a removed/missing-from-later-snapshot signal, not automatic withdrawal evidence.",
+              "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+              "is_ambiguous": false,
+              "is_hard_alert": true,
+              "materiality_score": 61.561,
+              "project_or_entity_name": "TRIFECTA Gas",
+              "source_file_hash_after": "31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+              "source_file_hash_before": "bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+              "source_url": "https://www.ercot.com/mp/data-products/data-product-details?id=PG7-200-ER",
+              "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596",
+              "trace_id": "chg_e28a30f8dd2942b6"
+            }
+          ]
+        },
+        "message": "Removed events=57",
+        "name": "Removed records are not automatically withdrawn",
+        "status": "passed"
+      },
+      {
+        "case_id": "ercot_diff_09",
+        "category": "ercot_real_diff",
+        "details": {
+          "counts": {
+            "capacity_changed": 7,
+            "completed_project": 12,
+            "fuel_type_changed": 3,
+            "name_changed": 2,
+            "new_project": 26,
+            "removed_project": 57,
+            "status_changed": 10,
+            "target_cod_accelerated": 4,
+            "target_cod_delayed": 77,
+            "unchanged": 1873,
+            "withdrawn_project": 12
+          }
+        },
+        "message": "capacity_changed count=7",
+        "name": "Capacity changes are detected with raw support",
+        "status": "passed"
+      },
+      {
+        "case_id": "ercot_diff_10",
+        "category": "ercot_real_diff",
+        "details": {
+          "counts": {
+            "capacity_changed": 7,
+            "completed_project": 12,
+            "fuel_type_changed": 3,
+            "name_changed": 2,
+            "new_project": 26,
+            "removed_project": 57,
+            "status_changed": 10,
+            "target_cod_accelerated": 4,
+            "target_cod_delayed": 77,
+            "unchanged": 1873,
+            "withdrawn_project": 12
+          }
+        },
+        "message": "COD move count=81",
+        "name": "COD moves are detected with raw support",
+        "status": "passed"
+      }
+    ],
+    "ercot_real_ingestion": [
+      {
+        "case_id": "ercot_ingestion_01",
+        "category": "ercot_real_ingestion",
+        "details": {
+          "hashes": [
+            "bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+            "31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc"
+          ]
+        },
+        "message": "ERCOT manifest entries=2",
+        "name": "ERCOT source file hashes exist",
+        "status": "passed"
+      },
+      {
+        "case_id": "ercot_ingestion_02",
+        "category": "ercot_real_ingestion",
+        "details": {
+          "checks": [
+            {
+              "calculated": 2053,
+              "check": "raw_row_count_vs_ingested:ERCOT_GIS_2026_04.xlsx",
+              "delta": 0.0,
+              "details": "snapshot_id=snap_real_ercot_gis_2026_04_bf97215d hash=bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+              "domain": "ercot",
+              "expected": 2053,
+              "status": "passed",
+              "tolerance": 0
+            },
+            {
+              "calculated": 2022,
+              "check": "raw_row_count_vs_ingested:ERCOT_GIS_2026_05.xlsx",
+              "delta": 0.0,
+              "details": "snapshot_id=snap_real_ercot_gis_2026_05_31f2b596 hash=31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+              "domain": "ercot",
+              "expected": 2022,
+              "status": "passed",
+              "tolerance": 0
+            }
+          ]
+        },
+        "message": "ERCOT independent row-count checks=2",
+        "name": "ERCOT row counts match independent checks",
+        "status": "passed"
+      },
+      {
+        "case_id": "ercot_ingestion_03",
+        "category": "ercot_real_ingestion",
+        "details": {
+          "missing": []
+        },
+        "message": "ERCOT profile mapped queue_id/project_name/capacity fields.",
+        "name": "ERCOT required columns are mapped or documented",
+        "status": "passed"
+      },
+      {
+        "case_id": "ercot_ingestion_04",
+        "category": "ercot_real_ingestion",
+        "details": {
+          "adapter": {
+            "adapted_event_count": 210,
+            "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+            "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596"
+          },
+          "audit": {
+            "ambiguous_count": 0,
+            "ambiguous_matches": 0,
+            "ambiguous_path": "reports\\real_data\\entity_resolution_audit\\ercot_ambiguous_2026_04_to_2026_05.csv",
+            "exact_matches": 1996,
+            "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+            "fuzzy_matches": 0,
+            "manual_label_values": [
+              "same_entity",
+              "different_entity",
+              "true_new",
+              "true_removed",
+              "true_withdrawn",
+              "true_completed",
+              "reclassification",
+              "ambiguous_needs_review",
+              "insufficient_evidence"
+            ],
+            "manual_review_candidate_count": 50,
+            "manual_review_path": "reports\\real_data\\manual_review\\ercot_manual_review_template_2026_04_to_2026_05.csv",
+            "matches_path": "reports\\real_data\\entity_resolution_audit\\ercot_matches_2026_04_to_2026_05.csv",
+            "reclassifications": 3,
+            "row_count": 2206,
+            "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596",
+            "true_additions": 26,
+            "true_completed": 12,
+            "true_removals_or_missing": 57,
+            "true_withdrawals": 12
+          },
+          "diff": {
+            "counts_by_event_type": {
+              "capacity_changed": 7,
+              "completed_project": 12,
+              "fuel_type_changed": 3,
+              "name_changed": 2,
+              "new_project": 26,
+              "removed_project": 57,
+              "status_changed": 10,
+              "target_cod_accelerated": 4,
+              "target_cod_delayed": 77,
+              "unchanged": 1873,
+              "withdrawn_project": 12
+            },
+            "event_count": 2083,
+            "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+            "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596"
+          },
+          "digest_path": "reports\\real_data\\ercot\\real_monthly_digest_2026_04_to_2026_05.md",
+          "events_csv_path": "reports\\real_data\\ercot\\real_monthly_diff_events_2026_04_to_2026_05.csv",
+          "from_file_hash_sha256": "bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+          "from_normalized_row_count": 2053,
+          "from_row_count_raw": 2067,
+          "from_snapshot_date": "2026-04-30",
+          "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+          "profiles": [
+            "reports\\real_data\\ercot\\profile_2026_04.md",
+            "reports\\real_data\\ercot\\profile_2026_05.md"
+          ],
+          "resolver": {
+            "after_records": 2022,
+            "ambiguous_links": 0,
+            "before_records": 2053,
+            "entities_created": 2079,
+            "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+            "linked_records": 4075,
+            "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596"
+          },
+          "to_file_hash_sha256": "31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+          "to_normalized_row_count": 2022,
+          "to_row_count_raw": 2034,
+          "to_snapshot_date": "2026-05-31",
+          "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596"
+        },
+        "message": "ERCOT normalized rows are present and tied to raw payload records.",
+        "name": "ERCOT normalized records preserve raw payload counts",
+        "status": "passed"
+      }
+    ],
+    "independent_checks": [
+      {
+        "case_id": "independent_23",
+        "category": "independent_checks",
+        "details": {
+          "passed": 14
+        },
+        "message": "Independent check statuses={'passed': 14}",
+        "name": "Independent checks passed or documented",
+        "status": "passed"
+      }
+    ],
+    "lbnl_real_reproduction": [
+      {
+        "case_id": "lbnl_13",
+        "category": "lbnl_real_reproduction",
+        "details": {
+          "row_count": 38201
+        },
+        "message": "LBNL workbook profile has project sheet and rows.",
+        "name": "LBNL workbook profile exists",
+        "status": "passed"
+      },
+      {
+        "case_id": "lbnl_14",
+        "category": "lbnl_real_reproduction",
+        "details": {
+          "keys": [
+            "active_capacity_by_type_gw_mw1_only",
+            "active_capacity_gw_mw1_mw2_mw3",
+            "active_capacity_gw_mw1_only",
+            "active_project_row_count",
+            "ercot_active_capacity_gw_mw1_only",
+            "ercot_active_project_row_count",
+            "median_days_request_to_terminal_status",
+            "project_row_count",
+            "status_counts"
+          ]
+        },
+        "message": "LBNL calculated metric fields=9",
+        "name": "At least three LBNL metrics are calculated",
+        "status": "passed"
+      },
+      {
+        "case_id": "lbnl_15",
+        "category": "lbnl_real_reproduction",
+        "details": {
+          "comparisons": [
+            {
+              "calculated": 408.0021,
+              "delta": 0.0021,
+              "metric": "ERCOT active capacity GW",
+              "official_summary": 408.0,
+              "reason": "Project-level mw_1 capacity for active ERCOT rows rounds to workbook summary tab capacity.",
+              "status": "matched_within_tolerance",
+              "tolerance": 0.1
+            },
+            {
+              "calculated": 1796,
+              "delta": 269.0,
+              "metric": "ERCOT active request count",
+              "official_summary": 1527,
+              "reason": "Count differs; workbook summary appears to apply a summary-specific ERCOT count method while capacity matches.",
+              "status": "mismatch_documented",
+              "tolerance": 0
+            },
+            {
+              "calculated": 1744.7481,
+              "delta": -316.7519,
+              "metric": "All-region active capacity GW",
+              "official_summary": 2061.5,
+              "reason": "Mismatch expected because summary tabs include derived/estimated hybrid storage capacity and possibly summary-specific filters.",
+              "status": "mismatch_documented",
+              "tolerance": 0.1
+            }
+          ]
+        },
+        "message": "At least one LBNL metric matches an official workbook summary tab.",
+        "name": "At least one metric is compared to official summary",
+        "status": "passed"
+      },
+      {
+        "case_id": "lbnl_16",
+        "category": "lbnl_real_reproduction",
+        "details": {
+          "mismatches": [
+            "ERCOT active request count mismatch: calculated=1796 official_summary=1527 delta=269.0. Count differs; workbook summary appears to apply a summary-specific ERCOT count method while capacity matches.",
+            "All-region active capacity GW mismatch: calculated=1744.7481 official_summary=2061.5 delta=-316.7519. Mismatch expected because summary tabs include derived/estimated hybrid storage capacity and possibly summary-specific filters."
+          ]
+        },
+        "message": "LBNL mismatches/limitations are documented.",
+        "name": "LBNL mismatches are documented",
+        "status": "passed"
+      },
+      {
+        "case_id": "lbnl_17",
+        "category": "lbnl_real_reproduction",
+        "details": {},
+        "message": "LBNL reproduction caveats exclude load-interconnection claims.",
+        "name": "LBNL report makes no load-interconnection claim",
+        "status": "passed"
+      }
+    ],
+    "report_quality": [
+      {
+        "case_id": "report_18",
+        "category": "report_quality",
+        "details": {},
+        "message": "docs/REAL_DATA_VALIDATION.md exists with source manifest section.",
+        "name": "REAL_DATA_VALIDATION exists",
+        "status": "passed"
+      },
+      {
+        "case_id": "report_19",
+        "category": "report_quality",
+        "details": {},
+        "message": "ERCOT digest path=reports\\real_data\\ercot\\real_monthly_digest_2026_04_to_2026_05.md",
+        "name": "Real ERCOT digest exists",
+        "status": "passed"
+      },
+      {
+        "case_id": "report_20",
+        "category": "report_quality",
+        "details": {},
+        "message": "LBNL reproduction path=reports\\real_data\\lbnl\\lbnl_reproduction.md",
+        "name": "LBNL reproduction report exists",
+        "status": "passed"
+      },
+      {
+        "case_id": "report_21",
+        "category": "report_quality",
+        "details": {},
+        "message": "README includes Real Data Validation Sprint section.",
+        "name": "README has real validation section",
+        "status": "passed"
+      },
+      {
+        "case_id": "report_22",
+        "category": "report_quality",
+        "details": {},
+        "message": "Validation report distinguishes fixture and real-data modes.",
+        "name": "Reports distinguish fixtures from real data",
+        "status": "passed"
+      }
+    ]
+  },
+  "results": [
+    {
+      "case_id": "ercot_ingestion_01",
+      "category": "ercot_real_ingestion",
+      "details": {
+        "hashes": [
+          "bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+          "31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc"
+        ]
+      },
+      "message": "ERCOT manifest entries=2",
+      "name": "ERCOT source file hashes exist",
+      "status": "passed"
+    },
+    {
+      "case_id": "ercot_ingestion_02",
+      "category": "ercot_real_ingestion",
+      "details": {
+        "checks": [
+          {
+            "calculated": 2053,
+            "check": "raw_row_count_vs_ingested:ERCOT_GIS_2026_04.xlsx",
+            "delta": 0.0,
+            "details": "snapshot_id=snap_real_ercot_gis_2026_04_bf97215d hash=bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+            "domain": "ercot",
+            "expected": 2053,
+            "status": "passed",
+            "tolerance": 0
+          },
+          {
+            "calculated": 2022,
+            "check": "raw_row_count_vs_ingested:ERCOT_GIS_2026_05.xlsx",
+            "delta": 0.0,
+            "details": "snapshot_id=snap_real_ercot_gis_2026_05_31f2b596 hash=31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+            "domain": "ercot",
+            "expected": 2022,
+            "status": "passed",
+            "tolerance": 0
+          }
+        ]
+      },
+      "message": "ERCOT independent row-count checks=2",
+      "name": "ERCOT row counts match independent checks",
+      "status": "passed"
+    },
+    {
+      "case_id": "ercot_ingestion_03",
+      "category": "ercot_real_ingestion",
+      "details": {
+        "missing": []
+      },
+      "message": "ERCOT profile mapped queue_id/project_name/capacity fields.",
+      "name": "ERCOT required columns are mapped or documented",
+      "status": "passed"
+    },
+    {
+      "case_id": "ercot_ingestion_04",
+      "category": "ercot_real_ingestion",
+      "details": {
+        "adapter": {
+          "adapted_event_count": 210,
+          "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+          "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596"
+        },
+        "audit": {
+          "ambiguous_count": 0,
+          "ambiguous_matches": 0,
+          "ambiguous_path": "reports\\real_data\\entity_resolution_audit\\ercot_ambiguous_2026_04_to_2026_05.csv",
+          "exact_matches": 1996,
+          "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+          "fuzzy_matches": 0,
+          "manual_label_values": [
+            "same_entity",
+            "different_entity",
+            "true_new",
+            "true_removed",
+            "true_withdrawn",
+            "true_completed",
+            "reclassification",
+            "ambiguous_needs_review",
+            "insufficient_evidence"
+          ],
+          "manual_review_candidate_count": 50,
+          "manual_review_path": "reports\\real_data\\manual_review\\ercot_manual_review_template_2026_04_to_2026_05.csv",
+          "matches_path": "reports\\real_data\\entity_resolution_audit\\ercot_matches_2026_04_to_2026_05.csv",
+          "reclassifications": 3,
+          "row_count": 2206,
+          "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596",
+          "true_additions": 26,
+          "true_completed": 12,
+          "true_removals_or_missing": 57,
+          "true_withdrawals": 12
+        },
+        "diff": {
+          "counts_by_event_type": {
+            "capacity_changed": 7,
+            "completed_project": 12,
+            "fuel_type_changed": 3,
+            "name_changed": 2,
+            "new_project": 26,
+            "removed_project": 57,
+            "status_changed": 10,
+            "target_cod_accelerated": 4,
+            "target_cod_delayed": 77,
+            "unchanged": 1873,
+            "withdrawn_project": 12
+          },
+          "event_count": 2083,
+          "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+          "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596"
+        },
+        "digest_path": "reports\\real_data\\ercot\\real_monthly_digest_2026_04_to_2026_05.md",
+        "events_csv_path": "reports\\real_data\\ercot\\real_monthly_diff_events_2026_04_to_2026_05.csv",
+        "from_file_hash_sha256": "bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+        "from_normalized_row_count": 2053,
+        "from_row_count_raw": 2067,
+        "from_snapshot_date": "2026-04-30",
+        "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+        "profiles": [
+          "reports\\real_data\\ercot\\profile_2026_04.md",
+          "reports\\real_data\\ercot\\profile_2026_05.md"
+        ],
+        "resolver": {
+          "after_records": 2022,
+          "ambiguous_links": 0,
+          "before_records": 2053,
+          "entities_created": 2079,
+          "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+          "linked_records": 4075,
+          "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596"
+        },
+        "to_file_hash_sha256": "31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+        "to_normalized_row_count": 2022,
+        "to_row_count_raw": 2034,
+        "to_snapshot_date": "2026-05-31",
+        "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596"
+      },
+      "message": "ERCOT normalized rows are present and tied to raw payload records.",
+      "name": "ERCOT normalized records preserve raw payload counts",
+      "status": "passed"
+    },
+    {
+      "case_id": "ercot_diff_05",
+      "category": "ercot_real_diff",
+      "details": {
+        "sample": [
+          {
+            "before_after": {
+              "target_cod": {
+                "after": "2028-09-13",
+                "before": "2027-07-01",
+                "delta_days": 440
+              }
+            },
+            "capacity_mw": 512.6,
+            "confidence": 1.0,
+            "county_or_region": "La Salle",
+            "event_type": "target_cod_delayed",
+            "explanation": "Target COD moved later by 440 days, above the 90-day threshold.",
+            "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+            "is_ambiguous": false,
+            "is_hard_alert": true,
+            "materiality_score": 77.0978,
+            "project_or_entity_name": "La Salle Solar",
+            "source_file_hash_after": "31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+            "source_file_hash_before": "bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+            "source_url": "https://www.ercot.com/mp/data-products/data-product-details?id=PG7-200-ER",
+            "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596",
+            "trace_id": "chg_41f6ad6dfaa94095"
+          },
+          {
+            "before_after": {
+              "target_cod": {
+                "after": "2030-05-30",
+                "before": "2027-05-23",
+                "delta_days": 1103
+              }
+            },
+            "capacity_mw": 450.0,
+            "confidence": 1.0,
+            "county_or_region": "Guadalupe",
+            "event_type": "target_cod_delayed",
+            "explanation": "Target COD moved later by 1103 days, above the 90-day threshold.",
+            "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+            "is_ambiguous": false,
+            "is_hard_alert": true,
+            "materiality_score": 76.5321,
+            "project_or_entity_name": "Calpine Guadalupe Peakers",
+            "source_file_hash_after": "31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+            "source_file_hash_before": "bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+            "source_url": "https://www.ercot.com/mp/data-products/data-product-details?id=PG7-200-ER",
+            "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596",
+            "trace_id": "chg_093b5bd99c8a4e94"
+          },
+          {
+            "before_after": {
+              "target_cod": {
+                "after": "2029-04-30",
+                "before": "2027-05-01",
+                "delta_days": 730
+              }
+            },
+            "capacity_mw": 438.75,
+            "confidence": 1.0,
+            "county_or_region": "Wilbarger",
+            "event_type": "target_cod_delayed",
+            "explanation": "Target COD moved later by 730 days, above the 90-day threshold.",
+            "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+            "is_ambiguous": false,
+            "is_hard_alert": true,
+            "materiality_score": 76.4222,
+            "project_or_entity_name": "Poco Trail Solar",
+            "source_file_hash_after": "31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+            "source_file_hash_before": "bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+            "source_url": "https://www.ercot.com/mp/data-products/data-product-details?id=PG7-200-ER",
+            "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596",
+            "trace_id": "chg_92d86fd2131c4452"
+          }
+        ]
+      },
+      "message": "Top traceable events=20",
+      "name": "Digest top events have snapshot IDs and file hashes",
+      "status": "passed"
+    },
+    {
+      "case_id": "ercot_diff_06",
+      "category": "ercot_real_diff",
+      "details": {
+        "bad": [],
+        "count": 2
+      },
+      "message": "Ambiguous digest rows are not hard alerts.",
+      "name": "Ambiguous events are not hard alerts",
+      "status": "passed"
+    },
+    {
+      "case_id": "ercot_diff_07",
+      "category": "ercot_real_diff",
+      "details": {
+        "new_same_id": []
+      },
+      "message": "Exact INR matches=1996",
+      "name": "Stable exact INR matches are not counted as new",
+      "status": "passed"
+    },
+    {
+      "case_id": "ercot_diff_08",
+      "category": "ercot_real_diff",
+      "details": {
+        "sample": [
+          {
+            "before_after": {
+              "before_project_name": "Pinnington Solar"
+            },
+            "capacity_mw": 653.7,
+            "confidence": 1.0,
+            "county_or_region": "Jack",
+            "event_type": "removed_project",
+            "explanation": "Project entity appears in the earlier snapshot but has no non-ambiguous later match; this is a removed/missing-from-later-snapshot signal, not automatic withdrawal evidence.",
+            "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+            "is_ambiguous": false,
+            "is_hard_alert": true,
+            "materiality_score": 63.1538,
+            "project_or_entity_name": "Pinnington Solar",
+            "source_file_hash_after": "31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+            "source_file_hash_before": "bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+            "source_url": "https://www.ercot.com/mp/data-products/data-product-details?id=PG7-200-ER",
+            "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596",
+            "trace_id": "chg_08b32a5f66dd4286"
+          },
+          {
+            "before_after": {
+              "before_project_name": "Elmax Power Station"
+            },
+            "capacity_mw": 518.83,
+            "confidence": 1.0,
+            "county_or_region": "Harris",
+            "event_type": "removed_project",
+            "explanation": "Project entity appears in the earlier snapshot but has no non-ambiguous later match; this is a removed/missing-from-later-snapshot signal, not automatic withdrawal evidence.",
+            "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+            "is_ambiguous": false,
+            "is_hard_alert": true,
+            "materiality_score": 62.1503,
+            "project_or_entity_name": "Elmax Power Station",
+            "source_file_hash_after": "31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+            "source_file_hash_before": "bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+            "source_url": "https://www.ercot.com/mp/data-products/data-product-details?id=PG7-200-ER",
+            "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596",
+            "trace_id": "chg_64584c5922c240bd"
+          },
+          {
+            "before_after": {
+              "before_project_name": "TRIFECTA Gas"
+            },
+            "capacity_mw": 453.0,
+            "confidence": 1.0,
+            "county_or_region": "Midland",
+            "event_type": "removed_project",
+            "explanation": "Project entity appears in the earlier snapshot but has no non-ambiguous later match; this is a removed/missing-from-later-snapshot signal, not automatic withdrawal evidence.",
+            "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+            "is_ambiguous": false,
+            "is_hard_alert": true,
+            "materiality_score": 61.561,
+            "project_or_entity_name": "TRIFECTA Gas",
+            "source_file_hash_after": "31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+            "source_file_hash_before": "bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+            "source_url": "https://www.ercot.com/mp/data-products/data-product-details?id=PG7-200-ER",
+            "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596",
+            "trace_id": "chg_e28a30f8dd2942b6"
+          }
+        ]
+      },
+      "message": "Removed events=57",
+      "name": "Removed records are not automatically withdrawn",
+      "status": "passed"
+    },
+    {
+      "case_id": "ercot_diff_09",
+      "category": "ercot_real_diff",
+      "details": {
+        "counts": {
+          "capacity_changed": 7,
+          "completed_project": 12,
+          "fuel_type_changed": 3,
+          "name_changed": 2,
+          "new_project": 26,
+          "removed_project": 57,
+          "status_changed": 10,
+          "target_cod_accelerated": 4,
+          "target_cod_delayed": 77,
+          "unchanged": 1873,
+          "withdrawn_project": 12
+        }
+      },
+      "message": "capacity_changed count=7",
+      "name": "Capacity changes are detected with raw support",
+      "status": "passed"
+    },
+    {
+      "case_id": "ercot_diff_10",
+      "category": "ercot_real_diff",
+      "details": {
+        "counts": {
+          "capacity_changed": 7,
+          "completed_project": 12,
+          "fuel_type_changed": 3,
+          "name_changed": 2,
+          "new_project": 26,
+          "removed_project": 57,
+          "status_changed": 10,
+          "target_cod_accelerated": 4,
+          "target_cod_delayed": 77,
+          "unchanged": 1873,
+          "withdrawn_project": 12
+        }
+      },
+      "message": "COD move count=81",
+      "name": "COD moves are detected with raw support",
+      "status": "passed"
+    },
+    {
+      "case_id": "entity_11",
+      "category": "entity_resolution_human_labels",
+      "details": {
+        "manual_label_count": 0
+      },
+      "message": "No human manual labels are present; precision eval is skipped, not passed.",
+      "name": "Manual labels are evaluated or skipped honestly",
+      "status": "skipped_manual_review"
+    },
+    {
+      "case_id": "lbnl_13",
+      "category": "lbnl_real_reproduction",
+      "details": {
+        "row_count": 38201
+      },
+      "message": "LBNL workbook profile has project sheet and rows.",
+      "name": "LBNL workbook profile exists",
+      "status": "passed"
+    },
+    {
+      "case_id": "lbnl_14",
+      "category": "lbnl_real_reproduction",
+      "details": {
+        "keys": [
+          "active_capacity_by_type_gw_mw1_only",
+          "active_capacity_gw_mw1_mw2_mw3",
+          "active_capacity_gw_mw1_only",
+          "active_project_row_count",
+          "ercot_active_capacity_gw_mw1_only",
+          "ercot_active_project_row_count",
+          "median_days_request_to_terminal_status",
+          "project_row_count",
+          "status_counts"
+        ]
+      },
+      "message": "LBNL calculated metric fields=9",
+      "name": "At least three LBNL metrics are calculated",
+      "status": "passed"
+    },
+    {
+      "case_id": "lbnl_15",
+      "category": "lbnl_real_reproduction",
+      "details": {
+        "comparisons": [
+          {
+            "calculated": 408.0021,
+            "delta": 0.0021,
+            "metric": "ERCOT active capacity GW",
+            "official_summary": 408.0,
+            "reason": "Project-level mw_1 capacity for active ERCOT rows rounds to workbook summary tab capacity.",
+            "status": "matched_within_tolerance",
+            "tolerance": 0.1
+          },
+          {
+            "calculated": 1796,
+            "delta": 269.0,
+            "metric": "ERCOT active request count",
+            "official_summary": 1527,
+            "reason": "Count differs; workbook summary appears to apply a summary-specific ERCOT count method while capacity matches.",
+            "status": "mismatch_documented",
+            "tolerance": 0
+          },
+          {
+            "calculated": 1744.7481,
+            "delta": -316.7519,
+            "metric": "All-region active capacity GW",
+            "official_summary": 2061.5,
+            "reason": "Mismatch expected because summary tabs include derived/estimated hybrid storage capacity and possibly summary-specific filters.",
+            "status": "mismatch_documented",
+            "tolerance": 0.1
+          }
+        ]
+      },
+      "message": "At least one LBNL metric matches an official workbook summary tab.",
+      "name": "At least one metric is compared to official summary",
+      "status": "passed"
+    },
+    {
+      "case_id": "lbnl_16",
+      "category": "lbnl_real_reproduction",
+      "details": {
+        "mismatches": [
+          "ERCOT active request count mismatch: calculated=1796 official_summary=1527 delta=269.0. Count differs; workbook summary appears to apply a summary-specific ERCOT count method while capacity matches.",
+          "All-region active capacity GW mismatch: calculated=1744.7481 official_summary=2061.5 delta=-316.7519. Mismatch expected because summary tabs include derived/estimated hybrid storage capacity and possibly summary-specific filters."
+        ]
+      },
+      "message": "LBNL mismatches/limitations are documented.",
+      "name": "LBNL mismatches are documented",
+      "status": "passed"
+    },
+    {
+      "case_id": "lbnl_17",
+      "category": "lbnl_real_reproduction",
+      "details": {},
+      "message": "LBNL reproduction caveats exclude load-interconnection claims.",
+      "name": "LBNL report makes no load-interconnection claim",
+      "status": "passed"
+    },
+    {
+      "case_id": "report_18",
+      "category": "report_quality",
+      "details": {},
+      "message": "docs/REAL_DATA_VALIDATION.md exists with source manifest section.",
+      "name": "REAL_DATA_VALIDATION exists",
+      "status": "passed"
+    },
+    {
+      "case_id": "report_19",
+      "category": "report_quality",
+      "details": {},
+      "message": "ERCOT digest path=reports\\real_data\\ercot\\real_monthly_digest_2026_04_to_2026_05.md",
+      "name": "Real ERCOT digest exists",
+      "status": "passed"
+    },
+    {
+      "case_id": "report_20",
+      "category": "report_quality",
+      "details": {},
+      "message": "LBNL reproduction path=reports\\real_data\\lbnl\\lbnl_reproduction.md",
+      "name": "LBNL reproduction report exists",
+      "status": "passed"
+    },
+    {
+      "case_id": "report_21",
+      "category": "report_quality",
+      "details": {},
+      "message": "README includes Real Data Validation Sprint section.",
+      "name": "README has real validation section",
+      "status": "passed"
+    },
+    {
+      "case_id": "report_22",
+      "category": "report_quality",
+      "details": {},
+      "message": "Validation report distinguishes fixture and real-data modes.",
+      "name": "Reports distinguish fixtures from real data",
+      "status": "passed"
+    },
+    {
+      "case_id": "independent_23",
+      "category": "independent_checks",
+      "details": {
+        "passed": 14
+      },
+      "message": "Independent check statuses={'passed': 14}",
+      "name": "Independent checks passed or documented",
+      "status": "passed"
+    }
+  ],
+  "status_counts": {
+    "passed": 21,
+    "skipped_manual_review": 1
+  },
+  "total": 22
+}

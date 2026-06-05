@@ -1,0 +1,434 @@
+{
+  "caveats": [
+    "The LBNL Queued Up workbook includes generation and storage requests seeking transmission-grid interconnection; it does not include load interconnection requests, distribution-connected projects, or behind-the-meter projects.",
+    "Workbook summary tabs may include derived/estimated hybrid storage capacity and summary-specific filters; project-level raw component sums are not forced to match when the workbook method is not encoded in the project sheet."
+  ],
+  "comparisons": [
+    {
+      "calculated": 408.0021,
+      "delta": 0.0021,
+      "metric": "ERCOT active capacity GW",
+      "official_summary": 408.0,
+      "reason": "Project-level mw_1 capacity for active ERCOT rows rounds to workbook summary tab capacity.",
+      "status": "matched_within_tolerance",
+      "tolerance": 0.1
+    },
+    {
+      "calculated": 1796,
+      "delta": 269.0,
+      "metric": "ERCOT active request count",
+      "official_summary": 1527,
+      "reason": "Count differs; workbook summary appears to apply a summary-specific ERCOT count method while capacity matches.",
+      "status": "mismatch_documented",
+      "tolerance": 0
+    },
+    {
+      "calculated": 1744.7481,
+      "delta": -316.7519,
+      "metric": "All-region active capacity GW",
+      "official_summary": 2061.5,
+      "reason": "Mismatch expected because summary tabs include derived/estimated hybrid storage capacity and possibly summary-specific filters.",
+      "status": "mismatch_documented",
+      "tolerance": 0.1
+    }
+  ],
+  "download_url": "https://eta-publications.lbl.gov/sites/default/files/2026-05/lbnl_ix_queue_data_file_thru2025.xlsx",
+  "file_hash_sha256": "794582d3281c6a305e9615fcfec3fae9dc85be2165216d33760b677e976a08b6",
+  "independent_calculations_csv": "reports\\real_data\\lbnl\\lbnl_independent_calculations.csv",
+  "markdown_path": "reports\\real_data\\lbnl\\lbnl_reproduction.md",
+  "metrics_calculated": {
+    "active_capacity_by_type_gw_mw1_only": [
+      {
+        "active_rows": 1716,
+        "capacity_gw": 403.7582,
+        "type_clean": "Solar+Battery"
+      },
+      {
+        "active_rows": 2742,
+        "capacity_gw": 396.6147,
+        "type_clean": "Solar"
+      },
+      {
+        "active_rows": 2078,
+        "capacity_gw": 385.3298,
+        "type_clean": "Battery"
+      },
+      {
+        "active_rows": 622,
+        "capacity_gw": 240.0239,
+        "type_clean": "Gas"
+      },
+      {
+        "active_rows": 751,
+        "capacity_gw": 177.7638,
+        "type_clean": "Wind"
+      },
+      {
+        "active_rows": 166,
+        "capacity_gw": 33.0213,
+        "type_clean": "Other"
+      },
+      {
+        "active_rows": 23,
+        "capacity_gw": 23.4268,
+        "type_clean": "Offshore Wind"
+      },
+      {
+        "active_rows": 53,
+        "capacity_gw": 15.9497,
+        "type_clean": "Wind+Battery"
+      },
+      {
+        "active_rows": 47,
+        "capacity_gw": 10.393,
+        "type_clean": "Nuclear"
+      },
+      {
+        "active_rows": 27,
+        "capacity_gw": 8.661,
+        "type_clean": "Solar+Wind+Battery"
+      },
+      {
+        "active_rows": 63,
+        "capacity_gw": 8.6553,
+        "type_clean": "Other+Battery"
+      },
+      {
+        "active_rows": 15,
+        "capacity_gw": 6.1215,
+        "type_clean": "Other Storage"
+      },
+      {
+        "active_rows": 19,
+        "capacity_gw": 5.5915,
+        "type_clean": "Gas+Battery"
+      },
+      {
+        "active_rows": 8,
+        "capacity_gw": 4.9198,
+        "type_clean": "Gas+Other"
+      },
+      {
+        "active_rows": 49,
+        "capacity_gw": 4.7893,
+        "type_clean": "Geothermal"
+      },
+      {
+        "active_rows": 22,
+        "capacity_gw": 3.6989,
+        "type_clean": "Coal"
+      },
+      {
+        "active_rows": 17,
+        "capacity_gw": 2.5612,
+        "type_clean": "Solar+Other"
+      },
+      {
+        "active_rows": 46,
+        "capacity_gw": 2.2677,
+        "type_clean": "Hydro"
+      },
+      {
+        "active_rows": 3,
+        "capacity_gw": 1.9,
+        "type_clean": "Other+Battery+Other Storage"
+      },
+      {
+        "active_rows": 3,
+        "capacity_gw": 1.865,
+        "type_clean": "Solar+Gas+Battery"
+      },
+      {
+        "active_rows": 4,
+        "capacity_gw": 1.4089,
+        "type_clean": "Wind+Other"
+      },
+      {
+        "active_rows": 5,
+        "capacity_gw": 1.1096,
+        "type_clean": "Gas+Oil"
+      },
+      {
+        "active_rows": 4,
+        "capacity_gw": 0.9045,
+        "type_clean": "Solar+Wind"
+      },
+      {
+        "active_rows": 2,
+        "capacity_gw": 0.85,
+        "type_clean": "Solar+Other+Battery"
+      },
+      {
+        "active_rows": 3,
+        "capacity_gw": 0.786,
+        "type_clean": "Hydrogen"
+      },
+      {
+        "active_rows": 2,
+        "capacity_gw": 0.6202,
+        "type_clean": "Battery+Other Storage"
+      },
+      {
+        "active_rows": 1,
+        "capacity_gw": 0.6,
+        "type_clean": "Gas+Battery+Other Storage"
+      },
+      {
+        "active_rows": 1,
+        "capacity_gw": 0.3035,
+        "type_clean": "Other+Coal"
+      },
+      {
+        "active_rows": 8,
+        "capacity_gw": 0.2225,
+        "type_clean": "Diesel"
+      },
+      {
+        "active_rows": 5,
+        "capacity_gw": 0.2119,
+        "type_clean": "Oil"
+      },
+      {
+        "active_rows": 1,
+        "capacity_gw": 0.2,
+        "type_clean": "Solar+Gas"
+      },
+      {
+        "active_rows": 1,
+        "capacity_gw": 0.132,
+        "type_clean": "Gas+Coal"
+      },
+      {
+        "active_rows": 1,
+        "capacity_gw": 0.058,
+        "type_clean": "Gas+Diesel"
+      },
+      {
+        "active_rows": 1,
+        "capacity_gw": 0.0094,
+        "type_clean": "Geothermal+Battery"
+      },
+      {
+        "active_rows": 1,
+        "capacity_gw": 0.0067,
+        "type_clean": "Hydro+Battery"
+      },
+      {
+        "active_rows": 1,
+        "capacity_gw": 0.0066,
+        "type_clean": "Solar+Diesel"
+      },
+      {
+        "active_rows": 1,
+        "capacity_gw": 0.0046,
+        "type_clean": "Wind+Gas"
+      },
+      {
+        "active_rows": 1,
+        "capacity_gw": 0.0013,
+        "type_clean": "Solar+Geothermal"
+      }
+    ],
+    "active_capacity_gw_mw1_mw2_mw3": 1864.7698,
+    "active_capacity_gw_mw1_only": 1744.7481,
+    "active_project_row_count": 8513,
+    "ercot_active_capacity_gw_mw1_only": 408.0021,
+    "ercot_active_project_row_count": 1796,
+    "median_days_request_to_terminal_status": 651.0,
+    "project_row_count": 38201,
+    "status_counts": {
+      "active": 8513,
+      "operational": 4789,
+      "suspended": 668,
+      "unknown": 10,
+      "withdrawn": 24221
+    }
+  },
+  "mismatches_and_limitations": [
+    "ERCOT active request count mismatch: calculated=1796 official_summary=1527 delta=269.0. Count differs; workbook summary appears to apply a summary-specific ERCOT count method while capacity matches.",
+    "All-region active capacity GW mismatch: calculated=1744.7481 official_summary=2061.5 delta=-316.7519. Mismatch expected because summary tabs include derived/estimated hybrid storage capacity and possibly summary-specific filters."
+  ],
+  "official_summary_metrics": {
+    "active_capacity_gw_total_from_summary": 2061.5,
+    "active_n_total_from_summary": 8244,
+    "ercot_active_capacity_gw_summary": 408.0,
+    "ercot_active_n_summary": 1527,
+    "region_rows": [
+      {
+        "active_capacity_gw": 191.5,
+        "active_n": 432,
+        "operational_capacity_gw": 37.8,
+        "operational_n": 235,
+        "region": "CAISO",
+        "withdrawn_capacity_gw": 631.2,
+        "withdrawn_n": 2200
+      },
+      {
+        "active_capacity_gw": 408.0,
+        "active_n": 1527,
+        "operational_capacity_gw": 95.3,
+        "operational_n": 613,
+        "region": "ERCOT",
+        "withdrawn_capacity_gw": 262.0,
+        "withdrawn_n": 1158
+      },
+      {
+        "active_capacity_gw": 14.8,
+        "active_n": 72,
+        "operational_capacity_gw": 16.5,
+        "operational_n": 228,
+        "region": "ISO-NE",
+        "withdrawn_capacity_gw": 118.1,
+        "withdrawn_n": 982
+      },
+      {
+        "active_capacity_gw": 382.2,
+        "active_n": 1646,
+        "operational_capacity_gw": 73.3,
+        "operational_n": 515,
+        "region": "MISO",
+        "withdrawn_capacity_gw": 622.9,
+        "withdrawn_n": 3263
+      },
+      {
+        "active_capacity_gw": 29.2,
+        "active_n": 190,
+        "operational_capacity_gw": 24.8,
+        "operational_n": 215,
+        "region": "NYISO",
+        "withdrawn_capacity_gw": 324.1,
+        "withdrawn_n": 1531
+      },
+      {
+        "active_capacity_gw": 144.3,
+        "active_n": 1134,
+        "operational_capacity_gw": 97.6,
+        "operational_n": 1192,
+        "region": "PJM",
+        "withdrawn_capacity_gw": 638.1,
+        "withdrawn_n": 5226
+      },
+      {
+        "active_capacity_gw": 171.2,
+        "active_n": 683,
+        "operational_capacity_gw": 45.1,
+        "operational_n": 299,
+        "region": "SPP",
+        "withdrawn_capacity_gw": 382.9,
+        "withdrawn_n": 1846
+      },
+      {
+        "active_capacity_gw": 152.9,
+        "active_n": 957,
+        "operational_capacity_gw": 112.4,
+        "operational_n": 529,
+        "region": "Southeast (non-ISO)",
+        "withdrawn_capacity_gw": 603.3,
+        "withdrawn_n": 2738
+      },
+      {
+        "active_capacity_gw": 567.4,
+        "active_n": 1603,
+        "operational_capacity_gw": 64.3,
+        "operational_n": 963,
+        "region": "West (non-ISO)",
+        "withdrawn_capacity_gw": 949.7,
+        "withdrawn_n": 5277
+      },
+      {
+        "active_capacity_gw": null,
+        "active_n": null,
+        "operational_capacity_gw": null,
+        "operational_n": null,
+        "region": "Notes:",
+        "withdrawn_capacity_gw": null,
+        "withdrawn_n": null
+      },
+      {
+        "active_capacity_gw": null,
+        "active_n": null,
+        "operational_capacity_gw": null,
+        "operational_n": null,
+        "region": "(1) The number of operational and withdrawn projects with available data may be fewer than the total number of operational or withdrawn projects for each entity.",
+        "withdrawn_capacity_gw": null,
+        "withdrawn_n": null
+      },
+      {
+        "active_capacity_gw": null,
+        "active_n": null,
+        "operational_capacity_gw": null,
+        "operational_n": null,
+        "region": "(2) Data were sought from 7 ISOs and 50 non-ISO BAs; operational and withdrawn project data may be delayed or unavailable.",
+        "withdrawn_capacity_gw": null,
+        "withdrawn_n": null
+      },
+      {
+        "active_capacity_gw": null,
+        "active_n": null,
+        "operational_capacity_gw": null,
+        "operational_n": null,
+        "region": "(3) Capacity (GW) shown in these tables does not include estimates for missing hybrid storage capacity.",
+        "withdrawn_capacity_gw": null,
+        "withdrawn_n": null
+      },
+      {
+        "active_capacity_gw": null,
+        "active_n": null,
+        "operational_capacity_gw": null,
+        "operational_n": null,
+        "region": "(4) Withdrawn includes CAISO cluster 15 requests that were not resubmitted in 2024 (as required by CAISO to continue).",
+        "withdrawn_capacity_gw": null,
+        "withdrawn_n": null
+      }
+    ],
+    "sheet": "02. Data Sample by Region"
+  },
+  "row_count_raw": 38201,
+  "sheets_parsed": [
+    "Introduction",
+    "Contents",
+    "00. Background + Methods",
+    "01. Balancing Areas",
+    "02. Data Sample by Region",
+    "03. Complete Queue Data",
+    "04. Data Codebook",
+    "05. Annual Requests",
+    "06. Capacity Change YoY",
+    "07. Active Capacity by Year",
+    "08. Active Capacity by Type",
+    "09. Active Cap. Region+Type",
+    "10. Queues vs. Installed",
+    "11. Active Cap. Maps",
+    "12. Ix. Request Size Trends",
+    "13. Other Gen. + Storage",
+    "14. Hybrid Capacity",
+    "15. ERIS + NRIS Capacity",
+    "16. Cap. by Prop. Online Year",
+    "17. Cap. by Ix. Phase",
+    "18. IA Executed Capacity",
+    "19. IA Throughput by Region",
+    "20. ERAS and RRI Requests",
+    "21. Operational Volume Trend",
+    "22. Withdrawn Volume Trend",
+    "23. Completion Rate Trend",
+    "24. Comp. Rate Gen Type",
+    "25. Comp. Rate Region",
+    "26. Withdrawn Ix. Phase",
+    "27. Post-IA Completion",
+    "28. IR to WD",
+    "29. IR to IA - all",
+    "30. IR to IA - region",
+    "31. IR to IA - type",
+    "32. IR to IA - size",
+    "33. IR to IA - service",
+    "34. IA to COD - all",
+    "35. IA to COD - region",
+    "36. IA to COD - type",
+    "37. IR to COD - all",
+    "38. IR to COD - region",
+    "39. IR to COD - type",
+    "40. IR to COD - size"
+  ],
+  "source_url": "https://eta.lbl.gov/publications/us-interconnection-queue-data-0",
+  "workbook_id": "lbnl_queued_up_2026_794582d3"
+}

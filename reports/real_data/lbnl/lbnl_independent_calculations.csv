@@ -1,0 +1,9 @@
+delta,metric,official_summary,reason,source,status,value
+,project_row_count,,,03. Complete Queue Data,calculated,38201
+,active_project_row_count,,,03. Complete Queue Data,calculated,8513
+,active_capacity_gw_mw1_only,,,03. Complete Queue Data,calculated,1744.7481
+,active_capacity_gw_mw1_mw2_mw3,,,03. Complete Queue Data,calculated,1864.7698
+,summary_active_capacity_total_gw,,,02. Data Sample by Region,official_summary_tab,2061.5
+0.0021,ERCOT active capacity GW,408.0,Project-level mw_1 capacity for active ERCOT rows rounds to workbook summary tab capacity.,03. Complete Queue Data vs 02. Data Sample by Region,matched_within_tolerance,408.0021
+269.0,ERCOT active request count,1527,Count differs; workbook summary appears to apply a summary-specific ERCOT count method while capacity matches.,03. Complete Queue Data vs 02. Data Sample by Region,mismatch_documented,1796
+-316.7519,All-region active capacity GW,2061.5,Mismatch expected because summary tabs include derived/estimated hybrid storage capacity and possibly summary-specific filters.,03. Complete Queue Data vs 02. Data Sample by Region,mismatch_documented,1744.7481

@@ -1,0 +1,259 @@
+{
+  "file_hash_sha256": "31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+  "file_size_bytes": 676810,
+  "local_path": "data\\raw\\real\\ercot\\gis\\ERCOT_GIS_2026_05.xlsx",
+  "parse_errors": [],
+  "parse_status": "parsed",
+  "parser_version": "real_validation_v1",
+  "row_count_raw": 2022,
+  "sheet_names": [
+    "Contents",
+    "Disclaimer and References",
+    "Acronyms",
+    "Summary",
+    "Project Details - Large Gen",
+    "Project Details - Small Gen",
+    "GIM Trends",
+    "data_GIM Trends_1",
+    "data_GIM Trends_2",
+    "data_GIM Trends_3",
+    "data_GIM Trends_4",
+    "Commissioning Update",
+    "Inactive Projects",
+    "Cancellation Update"
+  ],
+  "sheet_profiles": [
+    {
+      "candidate_data_sheet": false,
+      "columns": [],
+      "non_empty_preview_rows": 12,
+      "sheet_name": "Contents"
+    },
+    {
+      "candidate_data_sheet": false,
+      "columns": [],
+      "non_empty_preview_rows": 13,
+      "sheet_name": "Disclaimer and References"
+    },
+    {
+      "candidate_data_sheet": false,
+      "columns": [],
+      "non_empty_preview_rows": 34,
+      "sheet_name": "Acronyms"
+    },
+    {
+      "candidate_data_sheet": false,
+      "columns": [],
+      "non_empty_preview_rows": 35,
+      "sheet_name": "Summary"
+    },
+    {
+      "candidate_data_sheet": true,
+      "columns": [
+        "INR",
+        "Project Name",
+        "GIM Study Phase",
+        "Interconnecting Entity",
+        "POI Location",
+        "County",
+        "CDR Reporting Zone",
+        "Projected COD",
+        "Fuel",
+        "Technology",
+        "Capacity (MW)",
+        "Unnamed: 11",
+        "Unnamed: 12",
+        "Screening Study Started",
+        "Screening Study Complete",
+        "FIS Requested",
+        "FIS Approved",
+        "Economic Study Required",
+        "IA Signed",
+        "Unnamed: 19",
+        "Air Permit",
+        "GHG Permit",
+        "Water Availability",
+        "Meets Planning",
+        "Meets All Planning",
+        "Unnamed: 25",
+        "Construction Start",
+        "Construction End",
+        "Approved for Energization",
+        "Approved for Synchronization",
+        "Comment"
+      ],
+      "header_row": 30,
+      "likely_fields": {
+        "capacity_mw": "Capacity (MW)",
+        "county": "County",
+        "fuel_or_technology": "Fuel",
+        "interconnection_agreement_date": "IA Signed",
+        "point_of_interconnection": "POI Location",
+        "project_name": "Project Name",
+        "queue_id": "INR",
+        "status": "GIM Study Phase",
+        "target_cod": "Projected COD",
+        "tsp": null
+      },
+      "non_empty_preview_rows": 65,
+      "row_count_with_inr": 1802,
+      "sheet_name": "Project Details - Large Gen"
+    },
+    {
+      "candidate_data_sheet": true,
+      "columns": [
+        "INR",
+        "Project Name",
+        "Model Ready Date",
+        "Interconnecting Entity",
+        "POI Location",
+        "County",
+        "CDR Reporting Zone",
+        "Projected COD",
+        "Fuel",
+        "Technology",
+        "Capacity (MW)",
+        "Change indicators: Proj Name, MW",
+        "IA Signed",
+        "Financial Security ",
+        "Approved for Energization",
+        "Approved for Synchronization",
+        "Comment"
+      ],
+      "header_row": 14,
+      "likely_fields": {
+        "capacity_mw": "Capacity (MW)",
+        "county": "County",
+        "fuel_or_technology": "Fuel",
+        "interconnection_agreement_date": "IA Signed",
+        "point_of_interconnection": "POI Location",
+        "project_name": "Project Name",
+        "queue_id": "INR",
+        "status": null,
+        "target_cod": "Projected COD",
+        "tsp": null
+      },
+      "non_empty_preview_rows": 45,
+      "row_count_with_inr": 37,
+      "sheet_name": "Project Details - Small Gen"
+    },
+    {
+      "candidate_data_sheet": false,
+      "columns": [],
+      "non_empty_preview_rows": 44,
+      "sheet_name": "GIM Trends"
+    },
+    {
+      "candidate_data_sheet": false,
+      "columns": [],
+      "non_empty_preview_rows": 14,
+      "sheet_name": "data_GIM Trends_1"
+    },
+    {
+      "candidate_data_sheet": false,
+      "columns": [],
+      "non_empty_preview_rows": 14,
+      "sheet_name": "data_GIM Trends_2"
+    },
+    {
+      "candidate_data_sheet": false,
+      "columns": [],
+      "non_empty_preview_rows": 14,
+      "sheet_name": "data_GIM Trends_3"
+    },
+    {
+      "candidate_data_sheet": false,
+      "columns": [],
+      "non_empty_preview_rows": 47,
+      "sheet_name": "data_GIM Trends_4"
+    },
+    {
+      "candidate_data_sheet": true,
+      "columns": [
+        "Commissioning Category",
+        "INR",
+        "Size Category",
+        "Project Name",
+        "Fuel",
+        "County",
+        "Approval Date *",
+        "MW **"
+      ],
+      "header_row": 7,
+      "likely_fields": {
+        "capacity_mw": "MW **",
+        "county": "County",
+        "fuel_or_technology": "Fuel",
+        "interconnection_agreement_date": null,
+        "point_of_interconnection": null,
+        "project_name": "Project Name",
+        "queue_id": "INR",
+        "status": "Commissioning Category",
+        "target_cod": null,
+        "tsp": null
+      },
+      "non_empty_preview_rows": 30,
+      "row_count_with_inr": 24,
+      "sheet_name": "Commissioning Update"
+    },
+    {
+      "candidate_data_sheet": true,
+      "columns": [
+        "INR",
+        "Size Category",
+        "Project Name",
+        "Fuel",
+        "County",
+        "Inactive Date",
+        "MW **"
+      ],
+      "header_row": 7,
+      "likely_fields": {
+        "capacity_mw": "MW **",
+        "county": "County",
+        "fuel_or_technology": "Fuel",
+        "interconnection_agreement_date": null,
+        "point_of_interconnection": null,
+        "project_name": "Project Name",
+        "queue_id": "INR",
+        "status": null,
+        "target_cod": null,
+        "tsp": null
+      },
+      "non_empty_preview_rows": 74,
+      "row_count_with_inr": 159,
+      "sheet_name": "Inactive Projects"
+    },
+    {
+      "candidate_data_sheet": true,
+      "columns": [
+        "INR",
+        "Size Category",
+        "Project Name",
+        "Fuel",
+        "County",
+        "Cancel Date",
+        "MW **"
+      ],
+      "header_row": 7,
+      "likely_fields": {
+        "capacity_mw": "MW **",
+        "county": "County",
+        "fuel_or_technology": "Fuel",
+        "interconnection_agreement_date": null,
+        "point_of_interconnection": null,
+        "project_name": "Project Name",
+        "queue_id": "INR",
+        "status": null,
+        "target_cod": null,
+        "tsp": null
+      },
+      "non_empty_preview_rows": 18,
+      "row_count_with_inr": 12,
+      "sheet_name": "Cancellation Update"
+    }
+  ],
+  "snapshot_date": "2026-05-31",
+  "source_name": "ERCOT GIS Report",
+  "source_url": "https://www.ercot.com/mp/data-products/data-product-details?id=PG7-200-ER"
+}
