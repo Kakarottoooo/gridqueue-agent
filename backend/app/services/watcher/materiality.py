@@ -10,6 +10,7 @@ from app.config import project_root
 
 BASE_WEIGHTS: dict[str, float] = {
     "withdrawn_project": 40,
+    "removed_project": 25,
     "completed_project": 35,
     "new_project": 30,
     "status_changed": 25,

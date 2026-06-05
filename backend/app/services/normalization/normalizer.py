@@ -11,7 +11,7 @@ from app.services.utils import compact_whitespace, new_id
 
 
 COLUMN_ALIASES: dict[str, tuple[str, ...]] = {
-    "queue_id": ("queue id", "queue no", "queue number", "project code", "interconnection request id", "ir number"),
+    "queue_id": ("queue id", "queue no", "queue number", "project code", "interconnection request id", "ir number", "inr", "ginr id"),
     "project_name": ("project name", "project", "generation resource", "resource name", "facility name"),
     "interconnecting_entity": ("interconnecting entity", "developer", "company", "applicant", "owner"),
     "county": ("county", "county name"),
@@ -20,7 +20,7 @@ COLUMN_ALIASES: dict[str, tuple[str, ...]] = {
     "transmission_owner": ("transmission owner", "tsp", "utility", "transmission service provider"),
     "fuel_type": ("fuel type", "technology", "resource type", "fuel", "generation type"),
     "capacity_mw": ("capacity mw", "capacity (mw)", "mw", "nameplate mw", "summer mw"),
-    "status": ("status", "project status", "queue status"),
+    "status": ("status", "project status", "queue status", "q status"),
     "request_date": ("request date", "application date", "queue date"),
     "target_cod": ("target cod", "planned cod", "commercial operation date", "projected cod", "in service date"),
     "actual_cod": ("actual cod", "actual commercial operation date", "online date"),
@@ -223,4 +223,3 @@ def _is_missing(value: Any) -> bool:
     if str(value).strip().lower() in {"", "nan", "none", "null", "nat"}:
         return True
     return False
-

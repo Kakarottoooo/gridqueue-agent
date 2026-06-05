@@ -1,4 +1,4 @@
-.PHONY: install ingest-fixtures ingest-live-ercot ingest-lbnl seed-flex-rules seed-watch-sources run-watcher seed-lead-time-kb seed-time-to-power-fixtures time-to-power-demo flex-demo watcher-demo counts test eval dev-api dev-web demo frontend-typecheck frontend-lint
+.PHONY: install ingest-fixtures ingest-live-ercot ingest-lbnl seed-flex-rules seed-watch-sources run-watcher seed-lead-time-kb seed-time-to-power-fixtures time-to-power-demo real-ercot-profile real-ercot-run real-lbnl-profile real-lbnl-reproduce real-eval real-validation-report flex-demo watcher-demo counts test eval dev-api dev-web demo frontend-typecheck frontend-lint
 
 install:
 	python -m pip install -e "backend[dev]"
@@ -30,6 +30,24 @@ seed-time-to-power-fixtures:
 
 time-to-power-demo:
 	python scripts/run_time_to_power_demo.py
+
+real-ercot-profile:
+	python scripts/profile_real_ercot_gis.py
+
+real-ercot-run:
+	python scripts/run_real_ercot_pair.py --from-file data/raw/real/ercot/gis/ERCOT_GIS_2026_04.xlsx --from-snapshot-date 2026-04-30 --to-file data/raw/real/ercot/gis/ERCOT_GIS_2026_05.xlsx --to-snapshot-date 2026-05-31
+
+real-lbnl-profile:
+	python scripts/profile_real_lbnl_workbook.py --file data/raw/real/lbnl/LBNL_Queued_Up_2026_Data_File.xlsx
+
+real-lbnl-reproduce:
+	python scripts/run_lbnl_reproduction.py --file data/raw/real/lbnl/LBNL_Queued_Up_2026_Data_File.xlsx
+
+real-eval:
+	python evals/run_real_evals.py
+
+real-validation-report:
+	python scripts/generate_real_data_validation_report.py
 
 flex-demo:
 	python scripts/ingest_fixture.py

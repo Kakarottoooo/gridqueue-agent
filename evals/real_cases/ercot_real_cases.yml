@@ -1,0 +1,11 @@
+cases:
+  - source_file_hash_exists
+  - row_count_matches_independent_workbook_count
+  - required_columns_mapped_or_documented
+  - normalized_records_preserve_raw_payload
+  - digest_top_events_have_snapshot_ids_and_hashes
+  - ambiguous_events_not_hard_alerts
+  - exact_inr_stable_projects_not_new
+  - disappeared_projects_not_automatically_withdrawn
+  - capacity_changes_detected_from_raw_before_after
+  - cod_moves_detected_from_raw_before_after

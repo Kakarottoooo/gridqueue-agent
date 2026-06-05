@@ -89,7 +89,28 @@ def diff_snapshots(
 
         for entity_id, before in before_by_entity.items():
             after = after_by_entity.get(entity_id)
-            if not after or after["is_ambiguous"]:
+            if not after:
+                created.append(
+                    _insert_event(
+                        con,
+                        market=market,
+                        from_snapshot_id=from_snapshot_id,
+                        to_snapshot_id=to_snapshot_id,
+                        entity_id=entity_id,
+                        event_type="removed_project",
+                        severity="warning",
+                        confidence=before["match_score"],
+                        before_record_id=before["record"]["record_id"],
+                        after_record_id=None,
+                        changed_fields={"before_project_name": before["record"]["project_name"]},
+                        explanation=(
+                            "Project entity appears in the earlier snapshot but has no non-ambiguous later match; "
+                            "this is a removed/missing-from-later-snapshot signal, not automatic withdrawal evidence."
+                        ),
+                    )
+                )
+                continue
+            if after["is_ambiguous"]:
                 continue
             created.extend(_events_for_record_pair(con, market, from_snapshot_id, to_snapshot_id, entity_id, before, after))
 
