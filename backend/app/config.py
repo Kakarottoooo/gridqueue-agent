@@ -5,6 +5,14 @@ from pathlib import Path
 
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
+DEFAULT_CORS_ORIGINS = (
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+    "http://localhost:3002",
+    "http://127.0.0.1:3002",
+)
 
 
 def project_root() -> Path:
@@ -29,3 +37,9 @@ def raw_dir() -> Path:
     path.mkdir(parents=True, exist_ok=True)
     return path
 
+
+def cors_origins() -> list[str]:
+    configured = os.getenv("GRIDQUEUE_CORS_ORIGINS")
+    if configured:
+        return [origin.strip() for origin in configured.split(",") if origin.strip()]
+    return list(DEFAULT_CORS_ORIGINS)

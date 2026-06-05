@@ -108,7 +108,12 @@ def test_brief_contains_citations_caveats_sample_size_and_large_load_abstention(
     )
 
     assert brief["citations"]
+    assert brief["queue_snapshot"]["citation_ids"]
+    assert brief["comparable_projects"]
+    assert all(project["citation_ids"] for project in brief["comparable_projects"])
     assert brief["historical_proxy"]["sample_n"] >= 2
+    assert brief["historical_proxy"]["fallback_level"]
+    assert brief["historical_proxy"]["confidence"]
     assert "formal interconnection study" in "\n".join(brief["caveats_and_abstentions"])
     assert brief["large_load_context"] is not None
     assert "generation-resource records" in brief["large_load_context"]["summary"]
@@ -116,4 +121,3 @@ def test_brief_contains_citations_caveats_sample_size_and_large_load_abstention(
 
 def _new_project_payload(events: list[tuple[str, str, str]]) -> str:
     return "\n".join(str(row) for row in events if row[0] == "new_project")
-

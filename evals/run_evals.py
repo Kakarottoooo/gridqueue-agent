@@ -219,8 +219,25 @@ def _insufficient_sample_abstains(db_path: Path) -> tuple[bool, str, dict[str, A
 
 def _brief_citations(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
     brief = _brief(db_path)
-    passed = bool(brief["citations"]) and bool(brief["queue_snapshot"]["citation_ids"])
-    return passed, "Brief has citations and snapshot citation ids." if passed else "Brief is missing citations.", {"citations": brief["citations"], "queue_snapshot": brief["queue_snapshot"]}
+    comparable_projects = brief["comparable_projects"]
+    snapshot_ok = bool(brief["queue_snapshot"]["citation_ids"])
+    comparables_ok = bool(comparable_projects) and all(project.get("citation_ids") for project in comparable_projects)
+    source_urls_ok = all(citation.get("source_url") for citation in brief["citations"])
+    metric_metadata_ok = all(
+        brief["historical_proxy"].get(key) is not None
+        for key in ("sample_n", "fallback_level", "confidence")
+    )
+    passed = bool(brief["citations"]) and snapshot_ok and comparables_ok and source_urls_ok and metric_metadata_ok
+    return (
+        passed,
+        "Brief cites snapshot, comparable records, source URLs, and metric metadata." if passed else "Brief citation/provenance coverage is incomplete.",
+        {
+            "citations": brief["citations"],
+            "queue_snapshot": brief["queue_snapshot"],
+            "comparable_projects": comparable_projects,
+            "historical_proxy": brief["historical_proxy"],
+        },
+    )
 
 
 def _brief_formal_study_caveat(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
@@ -292,4 +309,3 @@ def _markdown(report: dict[str, Any]) -> str:
 
 if __name__ == "__main__":
     main()
-

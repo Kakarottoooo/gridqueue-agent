@@ -77,7 +77,13 @@ def generate_brief(
         db_path=db_path,
     )
     diff = get_diff_result(previous[0], latest[0], db_path) if previous else {"counts_by_event_type": {}, "events": []}
-    record_citations = get_citations_for_records([row["record_id"] for row in comparables[:5]], db_path)
+    top_comparables = comparables[:5]
+    record_citations = get_citations_for_records([row["record_id"] for row in top_comparables], db_path)
+    citations_by_record: dict[str, list[str]] = {}
+    for citation in record_citations:
+        citations_by_record.setdefault(citation["record_id"], []).append(citation["citation_id"])
+    for row in top_comparables:
+        row["citation_ids"] = citations_by_record.get(row["record_id"], [])
     citation_map = {citation["citation_id"]: citation for citation in [source_citation, *record_citations]}
 
     active_rows = [row for row in queue_rows if row["normalized_status"] == "Active"]
@@ -136,7 +142,7 @@ def generate_brief(
             "status_counts": status_counts,
             "citation_ids": [source_citation["citation_id"]],
         },
-        "comparable_projects": comparables[:5],
+        "comparable_projects": top_comparables,
         "monthly_changes": {
             "from_snapshot_id": previous[0] if previous else None,
             "to_snapshot_id": latest[0],
@@ -268,4 +274,3 @@ def _to_markdown(result: dict[str, Any]) -> str:
         ]
     )
     return "\n".join(lines)
-

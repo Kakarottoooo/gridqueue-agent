@@ -3,8 +3,8 @@
 ## Repository root
 
 The requested structure named `gridqueue-agent/`, but the provided workspace is already the project checkout at
-`C:\Users\Gzw19\Documents\GridQueue`. The implementation uses this directory as the repo root so `make install`,
-`make test`, and local Git commands work without an extra nested folder.
+the supplied root directory. The implementation uses that checkout as the repo root so `make install`, `make test`,
+and local Git commands work without an extra nested folder.
 
 ## Backend
 
@@ -43,4 +43,3 @@ citations, and evals.
 
 `data/raw` and `data/processed` are gitignored. Synthetic fixtures, docs, source code, tests, and eval code are
 committed; raw downloaded public files and DuckDB outputs are not.
-

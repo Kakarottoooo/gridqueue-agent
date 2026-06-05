@@ -61,6 +61,8 @@ make dev-web
 Open the API docs at http://127.0.0.1:8000/docs and the web app at http://localhost:3000.
 The frontend proxies `/api/backend/*` to `BACKEND_API_URL` and defaults to `http://127.0.0.1:8000`.
 If port 8000 is occupied, start the API on another port and run the web app with `BACKEND_API_URL` set to that URL.
+If you call the API directly from a different frontend origin, set `GRIDQUEUE_CORS_ORIGINS` to a comma-separated
+allowlist.
 
 If `make` is unavailable on Windows, run the underlying commands:
 
@@ -131,6 +133,7 @@ Calling those scripts without a file prints manual-download instructions.
 - Frontend typecheck: `cd frontend && npm run typecheck`
 - Frontend lint: `cd frontend && npm run lint`
 - Frontend build: `cd frontend && npm run build`
+- Dependency audit: `cd frontend && npm audit --audit-level=moderate`
 
 ## Demo screenshots
 
