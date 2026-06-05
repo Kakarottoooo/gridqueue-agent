@@ -44,6 +44,10 @@ citations, and evals.
 `data/raw` and `data/processed` are gitignored. Synthetic fixtures, docs, source code, tests, and eval code are
 committed; raw downloaded public files and DuckDB outputs are not.
 
+Real validation keeps the same policy. Raw ERCOT/LBNL XLSX files are ignored, while small source manifests, hashes,
+row counts, markdown reports, audit CSVs, and real eval definitions are committed. A real-data run must not fall back
+to fixtures and call them real.
+
 ## Flexibility Strategy Layer
 
 The flexibility layer is implemented as a Phase 2 extension rather than a separate project because it depends on the
@@ -97,3 +101,14 @@ They can shape planning context but do not become final quantified timeline redu
 
 The default procurement strategy is `post_ntp_serial` because it is the conservative planning assumption. At-risk
 overlap is optional and heavily caveated because early procurement can strand spend if interconnection outcomes change.
+
+## Real Data Validation
+
+The real validation sprint is a credibility layer over the existing system, not a new product phase. ERCOT GIS real
+ingestion reuses the existing `snapshots`, `raw_project_records`, `normalized_project_records`, entity-resolution,
+diff, and Watcher adapter tables. LBNL uses a dedicated project-level table because forcing the national workbook into
+the ERCOT schema would lose workbook-specific fields.
+
+Independent checks intentionally read raw XLSX files directly with pandas/openpyxl and compare simple counts/totals to
+app tables and reports. They avoid circular validation by not importing the main normalization, entity-resolution, or
+diff services.

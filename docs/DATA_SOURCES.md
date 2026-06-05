@@ -4,8 +4,11 @@
 
 - URL: https://www.ercot.com/mp/data-products/data-product-details?id=pg7-200-er
 - Role: Primary generation interconnection queue source for ERCOT-oriented records.
-- MVP status: Fixture ingestion works offline. Manual ERCOT GIS file ingestion is supported through `data/raw`.
+- MVP status: Fixture ingestion works offline. Real validation supports automatic discovery through ERCOT's public
+  report listing plus manual XLSX placement under `data/raw/real/ercot/gis/`.
 - Caveat: ERCOT file layouts can change. GridQueue uses alias-based column mapping and stores raw payload JSON before normalization.
+- Real validation files: April 2026 and May 2026 GIS workbooks. Hashes and row counts are in
+  `reports/real_data/source_manifest.json`.
 
 ## ERCOT Large Load Update, April 9 2026
 
@@ -18,8 +21,10 @@
 
 - URL: https://emp.lbl.gov/queues
 - Role: Future national benchmark source and fallback context.
-- MVP status: Manual file ingestion path exists; deterministic fixture tests do not require LBNL files.
+- MVP status: Manual file ingestion path exists; real validation profiles and ingests the 2026 Data File XLSX through
+  `scripts/run_lbnl_reproduction.py`.
 - Caveat: LBNL schemas and publication formats can vary, so automated ingestion is deliberately conservative.
+- Real validation report: `reports/real_data/lbnl/lbnl_reproduction.md`.
 
 ## gridstatus interconnection queue docs
 
@@ -99,6 +104,8 @@ If automatic source download is blocked or a public website changes, use:
 ```powershell
 python scripts/ingest_live_ercot.py data/raw/<ercot-file.xlsx>
 python scripts/ingest_lbnl.py data/raw/<lbnl-file.xlsx>
+python scripts/run_real_ercot_pair.py --from-file data/raw/real/ercot/gis/ERCOT_GIS_2026_04.xlsx --from-snapshot-date 2026-04-30 --to-file data/raw/real/ercot/gis/ERCOT_GIS_2026_05.xlsx --to-snapshot-date 2026-05-31
+python scripts/run_lbnl_reproduction.py --file data/raw/real/lbnl/LBNL_Queued_Up_2026_Data_File.xlsx
 ```
 
 The ingester records source metadata, file hash, snapshot date, row count, raw payload JSON, normalized records,

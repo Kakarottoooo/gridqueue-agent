@@ -76,6 +76,56 @@ graph TD
 
 The default demo uses synthetic fixtures under `data/fixtures`. They are clearly marked synthetic and are not market facts.
 
+## Real Data Validation Sprint
+
+Fixture mode proves the software mechanics. Real-data validation proves the parser, normalization, entity-resolution,
+diffing, and reporting logic against public source files. The current validated slice is ERCOT GIS month-over-month
+diff plus LBNL Queued Up reproduction checks.
+
+Real sources used:
+
+- ERCOT GIS Report, April 2026 and May 2026, from the official ERCOT GIS data product page.
+- LBNL Queued Up 2026 Data File, project-level data through end of 2025.
+
+Raw XLSX files are not committed. Place them here if automatic download is unavailable:
+
+```powershell
+data/raw/real/ercot/gis/ERCOT_GIS_2026_04.xlsx
+data/raw/real/ercot/gis/ERCOT_GIS_2026_05.xlsx
+data/raw/real/lbnl/LBNL_Queued_Up_2026_Data_File.xlsx
+```
+
+Run the real validation slice:
+
+```powershell
+python scripts/download_real_ercot_gis.py
+python scripts/run_real_ercot_pair.py --from-file data/raw/real/ercot/gis/ERCOT_GIS_2026_04.xlsx --from-snapshot-date 2026-04-30 --to-file data/raw/real/ercot/gis/ERCOT_GIS_2026_05.xlsx --to-snapshot-date 2026-05-31
+python scripts/download_real_lbnl_queued_up.py
+python scripts/run_lbnl_reproduction.py --file data/raw/real/lbnl/LBNL_Queued_Up_2026_Data_File.xlsx
+python scripts/run_independent_real_checks.py --ercot-from-file data/raw/real/ercot/gis/ERCOT_GIS_2026_04.xlsx --ercot-to-file data/raw/real/ercot/gis/ERCOT_GIS_2026_05.xlsx --lbnl-file data/raw/real/lbnl/LBNL_Queued_Up_2026_Data_File.xlsx
+python scripts/generate_real_data_validation_report.py
+python evals/run_real_evals.py
+```
+
+Outputs:
+
+- `docs/REAL_DATA_VALIDATION.md`
+- `reports/real_data/source_manifest.json`
+- `reports/real_data/ercot/real_monthly_digest_2026_04_to_2026_05.md`
+- `reports/real_data/entity_resolution_audit/ercot_matches_2026_04_to_2026_05.csv`
+- `reports/real_data/lbnl/lbnl_reproduction.md`
+- `reports/real_data/independent_checks.md`
+- `evals/results/real_latest.md`
+
+What passed in the checked-in real slice: real ERCOT workbooks were ingested with file hashes and row counts; a real
+April-to-May 2026 diff and digest were generated; an entity-resolution audit was generated; the real LBNL workbook was
+profiled and partially reproduced; independent checks passed. What is still manual: human labels for the entity audit.
+
+This does not make the whole platform production-ready. It establishes one real-data validated slice. ERCOT GIS is
+generation-resource data, not a complete large-load or data-center queue. LBNL Queued Up is generation/storage
+transmission-interconnection data and does not include load interconnection requests, distribution-connected projects,
+or behind-the-meter projects.
+
 ## Run locally
 
 ```powershell
@@ -357,6 +407,11 @@ Calling those scripts without a file prints manual-download instructions.
 - Lead-time KB seed: `python scripts/seed_lead_time_kb.py`
 - Time-to-Power fixture seed: `python scripts/seed_time_to_power_fixtures.py`
 - Time-to-Power demo: `python scripts/run_time_to_power_demo.py`
+- Real ERCOT profile: `python scripts/profile_real_ercot_gis.py`
+- Real ERCOT pair: `python scripts/run_real_ercot_pair.py --from-file data/raw/real/ercot/gis/ERCOT_GIS_2026_04.xlsx --from-snapshot-date 2026-04-30 --to-file data/raw/real/ercot/gis/ERCOT_GIS_2026_05.xlsx --to-snapshot-date 2026-05-31`
+- Real LBNL profile: `python scripts/profile_real_lbnl_workbook.py --file data/raw/real/lbnl/LBNL_Queued_Up_2026_Data_File.xlsx`
+- Real LBNL reproduction: `python scripts/run_lbnl_reproduction.py --file data/raw/real/lbnl/LBNL_Queued_Up_2026_Data_File.xlsx`
+- Real evals: `python evals/run_real_evals.py`
 
 ## Demo screenshots
 

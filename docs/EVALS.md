@@ -106,3 +106,29 @@ categories.
 
 The latest report separates `gridqueue_core`, `flexibility_strategy`, `monthly_watcher`, `lead_time_scaffold`, and
 `time_to_power` categories. The current fixture suite contains 66 deterministic eval cases.
+
+## Real-data evals
+
+Real-data evals are separate from fixture evals:
+
+```powershell
+python evals/run_real_evals.py
+```
+
+The runner writes:
+
+- `evals/results/real_latest.json`
+- `evals/results/real_latest.md`
+
+Real evals fail or return `blocked_missing_real_data` when the real ERCOT/LBNL XLSX inputs and generated reports are
+absent. Human-label entity-resolution metrics return `skipped_manual_review` until a person fills `manual_label` in
+the audit CSV. They do not silently pass on fixtures.
+
+The current real categories are:
+
+- `ercot_real_ingestion`
+- `ercot_real_diff`
+- `entity_resolution_human_labels`
+- `lbnl_real_reproduction`
+- `report_quality`
+- `independent_checks`
