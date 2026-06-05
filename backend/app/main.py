@@ -7,6 +7,7 @@ from app.config import cors_origins
 from app.routers.api import router
 from app.routers.flexibility import router as flexibility_router
 from app.routers.procurement import router as procurement_router
+from app.routers.time_to_power import router as time_to_power_router
 from app.routers.watcher import router as watcher_router
 
 
@@ -28,3 +29,4 @@ app.include_router(router)
 app.include_router(flexibility_router)
 app.include_router(watcher_router)
 app.include_router(procurement_router)
+app.include_router(time_to_power_router)

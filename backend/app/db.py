@@ -22,6 +22,12 @@ TABLES: tuple[str, ...] = (
     "equipment_lead_times",
     "project_equipment_scope_models",
     "procurement_timeline_estimates",
+    "commissioning_assumptions",
+    "time_to_power_scenarios",
+    "time_to_power_components",
+    "procurement_critical_path_results",
+    "time_to_power_estimates",
+    "time_to_power_briefs",
     "iso_flexibility_rules",
     "flexibility_rule_sources",
     "compute_cost_assumptions",
@@ -209,6 +215,142 @@ def init_database(db_path: str | Path | None = None) -> None:
               confidence TEXT NOT NULL,
               caveats_json JSON NOT NULL,
               citations_json JSON NOT NULL,
+              created_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS commissioning_assumptions (
+              commissioning_assumption_id TEXT PRIMARY KEY,
+              assumption_name TEXT NOT NULL,
+              version TEXT NOT NULL,
+              default_commissioning_low_days DOUBLE NOT NULL,
+              default_commissioning_high_days DOUBLE NOT NULL,
+              energization_buffer_low_days DOUBLE NOT NULL,
+              energization_buffer_high_days DOUBLE NOT NULL,
+              source_type TEXT NOT NULL,
+              source_url TEXT NOT NULL,
+              as_of_date DATE NOT NULL,
+              confidence TEXT NOT NULL,
+              notes TEXT,
+              created_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS time_to_power_scenarios (
+              scenario_id TEXT PRIMARY KEY,
+              scenario_name TEXT NOT NULL,
+              market TEXT NOT NULL,
+              jurisdiction TEXT NOT NULL,
+              county TEXT,
+              region TEXT,
+              project_type TEXT NOT NULL,
+              peak_mw DOUBLE NOT NULL,
+              average_load_factor DOUBLE NOT NULL,
+              interconnection_voltage_kv DOUBLE,
+              target_online_year INTEGER,
+              target_online_date DATE,
+              flexibility_scenario_id TEXT,
+              selected_tradeoff_id TEXT,
+              procurement_strategy TEXT NOT NULL,
+              procurement_start_assumption TEXT NOT NULL,
+              commissioning_assumption_id TEXT,
+              equipment_scope_mode TEXT NOT NULL,
+              manual_equipment_scope_json JSON NOT NULL,
+              created_at TIMESTAMP NOT NULL,
+              updated_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS time_to_power_components (
+              component_id TEXT PRIMARY KEY,
+              scenario_id TEXT NOT NULL,
+              component_type TEXT NOT NULL,
+              component_name TEXT NOT NULL,
+              low_days DOUBLE,
+              high_days DOUBLE,
+              confidence TEXT NOT NULL,
+              source_type TEXT NOT NULL,
+              source_id TEXT,
+              source_url TEXT,
+              citation_ids_json JSON NOT NULL,
+              assumptions_json JSON NOT NULL,
+              caveats_json JSON NOT NULL,
+              created_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS procurement_critical_path_results (
+              critical_path_id TEXT PRIMARY KEY,
+              scenario_id TEXT NOT NULL,
+              equipment_scope_json JSON NOT NULL,
+              lead_time_rows_json JSON NOT NULL,
+              binding_equipment_class TEXT,
+              binding_lead_time_low_months DOUBLE,
+              binding_lead_time_high_months DOUBLE,
+              procurement_low_days DOUBLE,
+              procurement_high_days DOUBLE,
+              confidence TEXT NOT NULL,
+              stale_flag BOOLEAN NOT NULL,
+              conflict_flag BOOLEAN NOT NULL,
+              unsupported_flag BOOLEAN NOT NULL,
+              citations_json JSON NOT NULL,
+              assumptions_json JSON NOT NULL,
+              caveats_json JSON NOT NULL,
+              created_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS time_to_power_estimates (
+              estimate_id TEXT PRIMARY KEY,
+              scenario_id TEXT NOT NULL,
+              baseline_metric_id TEXT,
+              flexibility_tradeoff_id TEXT,
+              critical_path_id TEXT,
+              commissioning_assumption_id TEXT,
+              no_flex_serial_low_days DOUBLE,
+              no_flex_serial_high_days DOUBLE,
+              flex_serial_low_days DOUBLE,
+              flex_serial_high_days DOUBLE,
+              no_flex_overlap_low_days DOUBLE,
+              no_flex_overlap_high_days DOUBLE,
+              flex_overlap_low_days DOUBLE,
+              flex_overlap_high_days DOUBLE,
+              selected_case TEXT NOT NULL,
+              binding_constraint TEXT NOT NULL,
+              confidence TEXT NOT NULL,
+              status TEXT NOT NULL,
+              status_explanation TEXT NOT NULL,
+              citations_json JSON NOT NULL,
+              assumptions_json JSON NOT NULL,
+              reproducibility_trace_json JSON NOT NULL,
+              created_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS time_to_power_briefs (
+              brief_id TEXT PRIMARY KEY,
+              scenario_id TEXT NOT NULL,
+              estimate_id TEXT NOT NULL,
+              title TEXT NOT NULL,
+              brief_json JSON NOT NULL,
+              markdown_path TEXT NOT NULL,
+              citations_json JSON NOT NULL,
+              assumptions_json JSON NOT NULL,
+              caveats_json JSON NOT NULL,
+              reproducibility_trace_json JSON NOT NULL,
+              generated_at TIMESTAMP NOT NULL,
               created_at TIMESTAMP NOT NULL
             )
             """
