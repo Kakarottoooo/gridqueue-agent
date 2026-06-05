@@ -7,6 +7,17 @@ from typing import Any, Callable
 
 from app.db import connect
 from app.services.brief_generation import generate_brief
+from app.services.flexibility import (
+    calculate_compute_cost,
+    estimate_interconnection_benefit,
+    evaluate_eligibility,
+    generate_flexibility_brief,
+    get_compute_assumption,
+    run_tradeoff_sweep,
+    seed_flexibility_rules,
+)
+from app.services.flexibility.brief import FLEXIBILITY_CAVEAT
+from app.services.flexibility.compute_cost import ASSUMPTION_FIELDS
 from app.services.ingestion import run_fixture_pipeline
 from app.services.metrics import compute_metric_rollup
 
@@ -22,11 +33,13 @@ class EvalCase:
     description: str
     query_path: str
     check: Callable[[Path], tuple[bool, str, dict[str, Any]]]
+    category: str = "gridqueue_core"
 
 
 def main() -> None:
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     run_fixture_pipeline(EVAL_DB, reset=True)
+    seed_flexibility_rules(EVAL_DB)
     cases = _cases()
     results = []
     for case in cases:
@@ -36,6 +49,7 @@ def main() -> None:
                 "case_id": case.case_id,
                 "description": case.description,
                 "query_path": case.query_path,
+                "category": case.category,
                 "passed": passed,
                 "message": message,
                 "evidence": evidence,
@@ -49,6 +63,7 @@ def main() -> None:
             "failed": len(results) - passed_count,
             "total": len(results),
         },
+        "categories": _category_summary(results),
         "results": results,
     }
     (RESULTS_DIR / "latest.json").write_text(json.dumps(report, indent=2, default=str), encoding="utf-8")
@@ -131,6 +146,104 @@ def _cases() -> list[EvalCase]:
             "Brief should use the latest available snapshot for current queue snapshot.",
             "generate_brief(...).queue_snapshot.snapshot_id",
             _latest_snapshot_used,
+        ),
+        EvalCase(
+            "flex-ferc-pending-contingent",
+            "FERC RM26-4 pending/proposed rule should produce contingent, not final eligible.",
+            "evaluate_eligibility(jurisdiction='FERC').eligibility_status",
+            _flex_ferc_pending_contingent,
+            "flexibility_strategy",
+        ),
+        EvalCase(
+            "flex-technical-evidence-not-rule",
+            "Emerald/EPRI technical evidence must not be treated as a regulatory rule.",
+            "evaluate_eligibility(jurisdiction='EVIDENCE').eligibility_status",
+            _flex_technical_evidence_not_rule,
+            "flexibility_strategy",
+        ),
+        EvalCase(
+            "flex-eligibility-source-urls",
+            "Every eligibility claim should include a source URL.",
+            "evaluate_eligibility(...).citations.source_url",
+            _flex_eligibility_source_urls,
+            "flexibility_strategy",
+        ),
+        EvalCase(
+            "flex-missing-control-ambiguous",
+            "Missing control/metering criteria should produce ambiguous or unsupported, not eligible.",
+            "evaluate_eligibility(metering_or_control_capability=None)",
+            _flex_missing_control_ambiguous,
+            "flexibility_strategy",
+        ),
+        EvalCase(
+            "flex-compute-assumptions-exposed",
+            "Compute-cost output must expose every assumption used.",
+            "calculate_compute_cost(...).assumptions_json",
+            _flex_compute_assumptions_exposed,
+            "flexibility_strategy",
+        ),
+        EvalCase(
+            "flex-extrapolation-flag",
+            "Commitment above 25% or duration above 3h must be marked as extrapolation.",
+            "calculate_compute_cost(commitment_depth_pct=30)",
+            _flex_extrapolation_flag,
+            "flexibility_strategy",
+        ),
+        EvalCase(
+            "flex-baseline-trace",
+            "Baseline timeline must trace to GridQueue metric sample_n/fallback/confidence.",
+            "estimate_interconnection_benefit(... baseline trace)",
+            _flex_baseline_trace,
+            "flexibility_strategy",
+        ),
+        EvalCase(
+            "flex-insufficient-baseline-abstains",
+            "Insufficient baseline must produce insufficient_baseline or abstention.",
+            "estimate_interconnection_benefit(min_sample_n=100)",
+            _flex_insufficient_baseline_abstains,
+            "flexibility_strategy",
+        ),
+        EvalCase(
+            "flex-qualitative-no-hard-recommendation",
+            "Qualitative-only benefit should not produce a hard ROI recommendation.",
+            "run_tradeoff_sweep(jurisdiction='FERC').recommendation",
+            _flex_qualitative_no_hard_recommendation,
+            "flexibility_strategy",
+        ),
+        EvalCase(
+            "flex-quantified-demo-max-score",
+            "Quantified fixture benefit plus value_per_day_usd should choose max net_benefit_score.",
+            "run_tradeoff_sweep(jurisdiction='DEMO', value_per_day_usd)",
+            _flex_quantified_demo_max_score,
+            "flexibility_strategy",
+        ),
+        EvalCase(
+            "flex-brief-formal-caveat",
+            "Flexibility Strategy Brief must include the formal caveat.",
+            "generate_flexibility_brief(...).caveats_and_abstentions",
+            _flex_brief_formal_caveat,
+            "flexibility_strategy",
+        ),
+        EvalCase(
+            "flex-brief-no-guarantee",
+            "Flexibility Strategy Brief must not claim guaranteed approval or actual grid capacity.",
+            "generate_flexibility_brief(...).markdown",
+            _flex_brief_no_guarantee,
+            "flexibility_strategy",
+        ),
+        EvalCase(
+            "flex-core-evals-still-present",
+            "Existing 12 GridQueue evals must remain in the core category.",
+            "eval case category count",
+            _flex_core_evals_still_present,
+            "flexibility_strategy",
+        ),
+        EvalCase(
+            "flex-rule-statuses-shown",
+            "Rule statuses must be shown in brief output.",
+            "generate_flexibility_brief(...).relevant_flexibility_rules.rule_status",
+            _flex_rule_statuses_shown,
+            "flexibility_strategy",
         ),
     ]
 
@@ -261,6 +374,122 @@ def _latest_snapshot_used(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
     return passed, "Brief uses latest snapshot." if passed else "Brief did not use latest snapshot.", {"snapshot_id": snapshot_id}
 
 
+def _flex_ferc_pending_contingent(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    result = evaluate_eligibility(_flex_scenario(), db_path=db_path, persist=False)[0]
+    passed = result["rule_status"] in {"pending", "proposed"} and result["eligibility_status"] == "contingent"
+    return passed, "FERC pending/proposed rule is contingent." if passed else "FERC rule was treated too strongly.", result
+
+
+def _flex_technical_evidence_not_rule(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    result = evaluate_eligibility(_flex_scenario(jurisdiction="EVIDENCE"), db_path=db_path, persist=False)[0]
+    passed = result["rule_status"] == "technical_evidence" and result["eligibility_status"] == "unsupported"
+    return passed, "Technical evidence is not treated as a regulatory rule." if passed else "Technical evidence was treated as eligibility.", result
+
+
+def _flex_eligibility_source_urls(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    results = evaluate_eligibility(_flex_scenario(), db_path=db_path, persist=False)
+    passed = all(result["source_url"] and result["citations"] and result["citations"][0]["source_url"] for result in results)
+    return passed, "Every eligibility result includes source URLs." if passed else "Eligibility source URL missing.", {"results": results}
+
+
+def _flex_missing_control_ambiguous(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    result = evaluate_eligibility(_flex_scenario(metering_or_control_capability=None), db_path=db_path, persist=False)[0]
+    passed = result["eligibility_status"] in {"ambiguous", "unsupported"} and result["eligibility_status"] != "eligible"
+    return passed, "Missing control/metering does not produce eligible." if passed else "Missing control/metering was overclassified.", result
+
+
+def _flex_compute_assumptions_exposed(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    assumption = get_compute_assumption(db_path=db_path)
+    result = calculate_compute_cost(
+        peak_mw=100,
+        commitment_depth_pct=25,
+        event_duration_hours=3,
+        events_per_year=20,
+        assumption=assumption,
+    )
+    passed = set(result["assumptions_json"]) == set(ASSUMPTION_FIELDS)
+    return passed, "Compute-cost output exposes every assumption." if passed else "Compute-cost assumptions are incomplete.", result
+
+
+def _flex_extrapolation_flag(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    assumption = get_compute_assumption(db_path=db_path)
+    high_commitment = calculate_compute_cost(
+        peak_mw=100,
+        commitment_depth_pct=30,
+        event_duration_hours=3,
+        events_per_year=20,
+        assumption=assumption,
+    )
+    long_event = calculate_compute_cost(
+        peak_mw=100,
+        commitment_depth_pct=25,
+        event_duration_hours=4,
+        events_per_year=20,
+        assumption=assumption,
+    )
+    passed = high_commitment["extrapolation_flag"] and long_event["extrapolation_flag"]
+    return passed, "Extrapolation flags are set above the public anchor." if passed else "Extrapolation flag missing.", {"high_commitment": high_commitment, "long_event": long_event}
+
+
+def _flex_baseline_trace(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    scenario = _flex_scenario()
+    eligibility = evaluate_eligibility(scenario, db_path=db_path, persist=False)
+    benefit = estimate_interconnection_benefit(scenario, eligibility, min_sample_n=2, db_path=db_path)
+    passed = bool(benefit["baseline_metric_id"]) and benefit["sample_n"] is not None and benefit["fallback_level"] and benefit["confidence"]
+    return passed, "Baseline trace includes metric_id, sample_n, fallback_level, and confidence." if passed else "Baseline trace incomplete.", benefit
+
+
+def _flex_insufficient_baseline_abstains(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    scenario = _flex_scenario()
+    eligibility = evaluate_eligibility(scenario, db_path=db_path, persist=False)
+    benefit = estimate_interconnection_benefit(scenario, eligibility, min_sample_n=100, db_path=db_path)
+    passed = benefit["benefit_status"] == "insufficient_baseline"
+    return passed, "Insufficient baseline abstains." if passed else "Insufficient baseline did not abstain.", benefit
+
+
+def _flex_qualitative_no_hard_recommendation(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    assumption = get_compute_assumption(db_path=db_path)
+    result = _tradeoff(db_path, jurisdiction="FERC", assumption=assumption, value_per_day_usd=1_000_000)
+    passed = result["recommendation"]["mode"] == "scenario_comparison_only" and all(point["net_benefit_score"] is None for point in result["tradeoff_points"])
+    return passed, "Contingent/qualitative benefit has no hard recommendation." if passed else "Hard recommendation was made without quantified support.", result["recommendation"]
+
+
+def _flex_quantified_demo_max_score(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    assumption = get_compute_assumption(db_path=db_path)
+    result = _tradeoff(db_path, jurisdiction="DEMO", assumption=assumption, value_per_day_usd=1_000_000)
+    scored = [point for point in result["tradeoff_points"] if point["net_benefit_score"] is not None]
+    selected = max(scored, key=lambda point: point["net_benefit_score"])
+    passed = result["recommendation"]["selected_tradeoff_id"] == selected["tradeoff_id"]
+    return passed, "Recommendation chooses max net_benefit_score under assumptions." if passed else "Recommendation did not choose max score.", {"recommendation": result["recommendation"], "selected": selected}
+
+
+def _flex_brief_formal_caveat(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    brief = _flex_brief(db_path)
+    passed = FLEXIBILITY_CAVEAT in brief["caveats_and_abstentions"]
+    return passed, "Flexibility caveat present." if passed else "Flexibility caveat missing.", {"caveats": brief["caveats_and_abstentions"]}
+
+
+def _flex_brief_no_guarantee(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    brief = _flex_brief(db_path)
+    markdown = brief["markdown"].lower()
+    forbidden = ["will be approved", "guaranteed approval", "actual grid capacity"]
+    passed = not any(term in markdown for term in forbidden)
+    return passed, "Brief avoids unsupported guarantee/capacity claims." if passed else "Brief includes unsupported guarantee/capacity language.", {"forbidden": forbidden, "markdown": brief["markdown"]}
+
+
+def _flex_core_evals_still_present(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    core_count = sum(1 for case in _cases() if case.category == "gridqueue_core")
+    passed = core_count == 12
+    return passed, "Existing 12 core evals are still present." if passed else "Core eval count changed unexpectedly.", {"core_count": core_count}
+
+
+def _flex_rule_statuses_shown(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    brief = _flex_brief(db_path)
+    statuses = [rule.get("rule_status") for rule in brief["relevant_flexibility_rules"]]
+    passed = bool(statuses) and all(statuses)
+    return passed, "Rule statuses are present in brief output." if passed else "Rule statuses missing from brief.", {"statuses": statuses}
+
+
 def _event_exists(db_path: Path, event_type: str, project_name: str) -> tuple[bool, str, dict[str, Any]]:
     with connect(db_path) as con:
         rows = con.execute(
@@ -289,21 +518,114 @@ def _brief(db_path: Path, question: str = "What public interconnection risks sho
     )
 
 
+def _flex_scenario(**overrides: Any) -> dict[str, Any]:
+    scenario = {
+        "scenario_id": "scenario_eval",
+        "market": "ERCOT",
+        "jurisdiction": "FERC",
+        "county": "Reeves",
+        "peak_mw": 100,
+        "average_load_factor": 0.85,
+        "commitment_depth_pct": 25,
+        "event_duration_hours": 3,
+        "events_per_year": 20,
+        "job_mix_json": {},
+        "colocated_generation": False,
+        "dispatchable_or_curtailable": True,
+        "metering_or_control_capability": True,
+        "assumption_id": "assumption_dcflex_public_anchor_v1",
+    }
+    scenario.update(overrides)
+    return scenario
+
+
+def _tradeoff(
+    db_path: Path,
+    *,
+    jurisdiction: str,
+    assumption: dict[str, Any],
+    value_per_day_usd: float | None,
+) -> dict[str, Any]:
+    return run_tradeoff_sweep(
+        market="ERCOT",
+        jurisdiction=jurisdiction,
+        county="Reeves",
+        peak_mw=100,
+        average_load_factor=0.85,
+        event_duration_hours=3,
+        events_per_year=20,
+        job_mix_json={},
+        colocated_generation=False,
+        dispatchable_or_curtailable=True,
+        metering_or_control_capability=True,
+        assumption=assumption,
+        baseline_project_type="Battery",
+        min_sample_n=2,
+        value_per_day_usd=value_per_day_usd,
+        db_path=db_path,
+    )
+
+
+def _flex_brief(db_path: Path) -> dict[str, Any]:
+    assumption = get_compute_assumption(db_path=db_path)
+    return generate_flexibility_brief(
+        market="ERCOT",
+        jurisdiction="FERC",
+        county="Reeves",
+        peak_mw=100,
+        average_load_factor=0.85,
+        commitment_depth_pct=25,
+        event_duration_hours=3,
+        events_per_year=20,
+        job_mix_json={},
+        colocated_generation=False,
+        dispatchable_or_curtailable=True,
+        metering_or_control_capability=True,
+        assumption=assumption,
+        baseline_project_type="Battery",
+        min_sample_n=2,
+        db_path=db_path,
+    )
+
+
+def _category_summary(results: list[dict[str, Any]]) -> dict[str, dict[str, int]]:
+    categories: dict[str, dict[str, int]] = {}
+    for result in results:
+        bucket = categories.setdefault(result["category"], {"passed": 0, "failed": 0, "total": 0})
+        bucket["total"] += 1
+        if result["passed"]:
+            bucket["passed"] += 1
+        else:
+            bucket["failed"] += 1
+    return categories
+
+
 def _markdown(report: dict[str, Any]) -> str:
     lines = [
         "# GridQueue Agent eval results",
         "",
         f"Passed: {report['summary']['passed']} / {report['summary']['total']}",
         "",
+        "## Categories",
+        "",
+        "| Category | Passed | Failed | Total |",
+        "| --- | ---: | ---: | ---: |",
+    ]
+    for category, summary in report["categories"].items():
+        lines.append(f"| `{category}` | {summary['passed']} | {summary['failed']} | {summary['total']} |")
+    lines.extend(
+        [
+        "",
         "| Case | Result | Message |",
         "| --- | --- | --- |",
-    ]
+        ]
+    )
     for result in report["results"]:
         mark = "PASS" if result["passed"] else "FAIL"
         lines.append(f"| `{result['case_id']}` | {mark} | {result['message']} |")
     lines.extend(["", "## Query paths"])
     for result in report["results"]:
-        lines.append(f"- `{result['case_id']}`: {result['query_path']}")
+        lines.append(f"- `{result['case_id']}` ({result['category']}): {result['query_path']}")
     return "\n".join(lines)
 
 
