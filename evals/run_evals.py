@@ -22,6 +22,8 @@ from app.services.flexibility.compute_cost import ASSUMPTION_FIELDS
 from app.services.ingestion import run_fixture_pipeline
 from app.services.metrics import compute_metric_rollup
 from app.services.procurement import list_lead_times, seed_lead_time_kb
+from app.services.time_to_power import generate_time_to_power_brief, generate_time_to_power_estimate, seed_time_to_power_fixtures
+from app.services.time_to_power.brief import TIME_TO_POWER_CAVEAT
 from app.services.watcher import (
     capture_regulatory_snapshots,
     latest_digest,
@@ -36,6 +38,9 @@ ROOT = Path(__file__).resolve().parents[1]
 RESULTS_DIR = ROOT / "evals" / "results"
 EVAL_DB = RESULTS_DIR / "eval.duckdb"
 _WATCHER_RUN_DBS: set[str] = set()
+_TTP_SEEDED_DBS: set[str] = set()
+_TTP_ESTIMATE_CACHE: dict[str, dict[str, Any]] = {}
+_TTP_BRIEF_CACHE: dict[str, dict[str, Any]] = {}
 
 
 @dataclass(frozen=True)
@@ -397,6 +402,146 @@ def _cases() -> list[EvalCase]:
             "README.md and docs/POST_NTP_LEAD_TIME.md",
             _lead_time_docs_label_scaffold,
             "lead_time_scaffold",
+        ),
+        EvalCase(
+            "ttp-baseline-provenance",
+            "Baseline timeline includes metric_id, sample_n, fallback_level, and confidence.",
+            "generate_time_to_power_estimate().baseline",
+            _ttp_baseline_provenance,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-insufficient-baseline-abstains",
+            "Insufficient baseline sample triggers insufficient_interconnection_baseline.",
+            "generate_time_to_power_estimate(min_sample_n=100)",
+            _ttp_insufficient_baseline_abstains,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-proposed-flex-contingent",
+            "Proposed/pending flexibility rule produces contingent status, not final timeline improvement.",
+            "generate_time_to_power_estimate(jurisdiction='FERC').flexibility_adjusted",
+            _ttp_proposed_flex_contingent,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-technical-evidence-not-regulation",
+            "Technical evidence is not treated as a regulatory rule.",
+            "generate_time_to_power_estimate(jurisdiction='EVIDENCE').flexibility_adjusted",
+            _ttp_technical_evidence_not_regulation,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-flex-no-procurement-reduction",
+            "Flexibility does not reduce procurement lead time by default.",
+            "generate_time_to_power_estimate(jurisdiction='DEMO') procurement component",
+            _ttp_flex_no_procurement_reduction,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-procurement-ranges",
+            "Procurement lead times are ranges, never bare point claims.",
+            "estimate.procurement_critical_path.lead_time_rows",
+            _ttp_procurement_ranges,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-procurement-source-metadata",
+            "Every procurement lead time has source_url and as_of_date.",
+            "estimate.procurement_critical_path.lead_time_rows source fields",
+            _ttp_procurement_source_metadata,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-stale-warning",
+            "Stale lead-time source triggers stale warning.",
+            "estimate.procurement_critical_path.stale_flag",
+            _ttp_stale_warning,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-conflict-warning",
+            "Conflicting lead-time sources trigger conflict flag and are not collapsed into fake precision.",
+            "estimate.procurement_critical_path.conflict_flag and rows",
+            _ttp_conflict_warning,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-binding-high-end",
+            "Critical path chooses binding equipment by highest high-end lead time.",
+            "estimate.procurement_critical_path.binding_equipment_class",
+            _ttp_binding_high_end,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-serial-math",
+            "Serial timeline math is correct.",
+            "estimate serial component arithmetic",
+            _ttp_serial_math,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-overlap-math",
+            "Overlap timeline math is correct.",
+            "estimate overlap component arithmetic",
+            _ttp_overlap_math,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-at-risk-caveat",
+            "At-risk overlap strategy includes explicit caveat.",
+            "generate_time_to_power_estimate(procurement_strategy='at_risk_overlap').caveats",
+            _ttp_at_risk_caveat,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-required-caveat",
+            "Time-to-Power Brief includes required caveat.",
+            "generate_time_to_power_brief().caveats_and_abstentions",
+            _ttp_required_caveat,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-key-number-provenance",
+            "Every key number in the brief has provenance.",
+            "brief baseline/procurement/commissioning citations and assumptions",
+            _ttp_key_number_provenance,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-no-guarantee-language",
+            "Brief does not claim guaranteed energization or interconnection approval.",
+            "brief.markdown",
+            _ttp_no_guarantee_language,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-demo-end-to-end",
+            "Fixture demo runs end-to-end.",
+            "generate_time_to_power_brief()",
+            _ttp_demo_end_to_end,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-core-evals-still-pass",
+            "Existing GridQueue core evals still pass.",
+            "eval case category count",
+            _ttp_core_evals_still_pass,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-flex-evals-still-pass",
+            "Existing Flexibility Strategy evals still pass.",
+            "eval case category count",
+            _ttp_flex_evals_still_pass,
+            "time_to_power",
+        ),
+        EvalCase(
+            "ttp-watcher-evals-still-pass",
+            "Existing Watcher evals still pass.",
+            "eval case category count",
+            _ttp_watcher_evals_still_pass,
+            "time_to_power",
         ),
     ]
 
@@ -795,6 +940,157 @@ def _lead_time_docs_label_scaffold(db_path: Path) -> tuple[bool, str, dict[str, 
     return passed, "Docs label lead-time layer as scaffold." if passed else "Lead-time scaffold positioning missing.", {"doc_exists": doc_path.exists()}
 
 
+def _ttp_baseline_provenance(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    baseline = _ttp_estimate(db_path)["baseline"]
+    passed = all(baseline.get(key) for key in ["metric_id", "sample_n", "fallback_level", "confidence"])
+    return passed, "Baseline includes metric_id/sample_n/fallback/confidence." if passed else "Baseline provenance missing.", baseline
+
+
+def _ttp_insufficient_baseline_abstains(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    estimate = _ttp_estimate(db_path, min_sample_n=100)
+    passed = estimate["status"] == "insufficient_interconnection_baseline" and estimate["baseline"]["baseline_low_days"] is None
+    return passed, "Insufficient baseline abstains." if passed else "Insufficient baseline did not abstain.", {"status": estimate["status"], "baseline": estimate["baseline"]}
+
+
+def _ttp_proposed_flex_contingent(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    flex = _ttp_estimate(db_path, jurisdiction="FERC")["flexibility_adjusted"]
+    passed = flex["rule_status"] in {"pending", "proposed"} and flex["benefit_status"] == "contingent" and flex["interconnection_with_flex_low_days"] is None
+    return passed, "Proposed/pending flex remains contingent without days-saved math." if passed else "Proposed flex was overclaimed.", flex
+
+
+def _ttp_technical_evidence_not_regulation(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    flex = _ttp_estimate(db_path, jurisdiction="EVIDENCE")["flexibility_adjusted"]
+    passed = flex["rule_status"] == "technical_evidence" and flex["benefit_status"] == "unsupported"
+    return passed, "Technical evidence is not regulation." if passed else "Technical evidence was treated as regulatory support.", flex
+
+
+def _ttp_flex_no_procurement_reduction(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    estimate = _ttp_estimate(db_path, jurisdiction="DEMO", commitment_depth_pct=20)
+    procurement = estimate["procurement_critical_path"]
+    no_flex_minus_flex = round(estimate["no_flex_serial_low_days"] - estimate["flex_serial_low_days"], 2)
+    baseline_minus_flex = round(
+        estimate["baseline"]["baseline_low_days"] - estimate["flexibility_adjusted"]["interconnection_with_flex_low_days"],
+        2,
+    )
+    passed = procurement["procurement_low_days"] == procurement["procurement_low_days"] and no_flex_minus_flex == baseline_minus_flex
+    return passed, "Flex benefit changes interconnection component only; procurement range is unchanged." if passed else "Flex affected procurement path.", {"estimate": estimate}
+
+
+def _ttp_procurement_ranges(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    rows = _ttp_estimate(db_path)["procurement_critical_path"]["lead_time_rows"]
+    passed = bool(rows) and all(row["lead_time_low_months"] < row["lead_time_high_months"] for row in rows)
+    return passed, "Procurement lead-time rows are ranges." if passed else "Procurement row collapsed to a point.", {"rows": rows}
+
+
+def _ttp_procurement_source_metadata(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    rows = _ttp_estimate(db_path)["procurement_critical_path"]["lead_time_rows"]
+    passed = bool(rows) and all(row.get("source_url") and row.get("as_of_date") for row in rows)
+    return passed, "Every procurement row has source_url and as_of_date." if passed else "Procurement source metadata missing.", {"rows": rows}
+
+
+def _ttp_stale_warning(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    critical = _ttp_estimate(db_path)["procurement_critical_path"]
+    passed = critical["stale_flag"] and any("stale" in caveat.lower() for caveat in critical["caveats"])
+    return passed, "Stale lead-time source is flagged." if passed else "Stale warning missing.", critical
+
+
+def _ttp_conflict_warning(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    critical = _ttp_estimate(db_path)["procurement_critical_path"]
+    ranges = {(row["equipment_class"], row["lead_time_low_months"], row["lead_time_high_months"]) for row in critical["lead_time_rows"]}
+    passed = critical["conflict_flag"] and len(ranges) > 1 and any("conflict" in caveat.lower() for caveat in critical["caveats"])
+    return passed, "Conflicting ranges are preserved and flagged." if passed else "Conflict warning missing or collapsed.", {"critical": critical}
+
+
+def _ttp_binding_high_end(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    critical = _ttp_estimate(db_path)["procurement_critical_path"]
+    max_high = max(row["lead_time_high_months"] for row in critical["lead_time_rows"])
+    passed = critical["binding_lead_time_high_months"] == max_high and critical["binding_equipment_class"] == "Large Power Transformer"
+    return passed, "Binding equipment follows highest high-end lead time." if passed else "Binding equipment selection is wrong.", critical
+
+
+def _ttp_serial_math(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    estimate = _ttp_estimate(db_path)
+    expected = round(
+        estimate["baseline"]["baseline_low_days"]
+        + estimate["procurement_critical_path"]["procurement_low_days"]
+        + estimate["commissioning_assumption"]["default_commissioning_low_days"]
+        + estimate["commissioning_assumption"]["energization_buffer_low_days"],
+        2,
+    )
+    passed = estimate["no_flex_serial_low_days"] == expected
+    return passed, "Serial timeline math is correct." if passed else "Serial math mismatch.", {"expected": expected, "actual": estimate["no_flex_serial_low_days"]}
+
+
+def _ttp_overlap_math(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    estimate = _ttp_estimate(db_path)
+    expected = round(
+        max(estimate["baseline"]["baseline_high_days"], estimate["procurement_critical_path"]["procurement_high_days"])
+        + estimate["commissioning_assumption"]["default_commissioning_high_days"]
+        + estimate["commissioning_assumption"]["energization_buffer_high_days"],
+        2,
+    )
+    passed = estimate["no_flex_overlap_high_days"] == expected
+    return passed, "Overlap timeline math is correct." if passed else "Overlap math mismatch.", {"expected": expected, "actual": estimate["no_flex_overlap_high_days"]}
+
+
+def _ttp_at_risk_caveat(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    estimate = _ttp_estimate(db_path, procurement_strategy="at_risk_overlap")
+    passed = estimate["selected_case"] == "no_flex_overlap" and any("At-risk overlap" in caveat for caveat in estimate["caveats"])
+    return passed, "At-risk overlap selected case is caveated." if passed else "At-risk caveat missing.", {"selected_case": estimate["selected_case"], "caveats": estimate["caveats"]}
+
+
+def _ttp_required_caveat(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    brief = _ttp_brief(db_path)
+    passed = TIME_TO_POWER_CAVEAT in brief["caveats_and_abstentions"] and TIME_TO_POWER_CAVEAT in brief["markdown"]
+    return passed, "Required Time-to-Power caveat present." if passed else "Required caveat missing.", {"caveats": brief["caveats_and_abstentions"]}
+
+
+def _ttp_key_number_provenance(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    brief = _ttp_brief(db_path)
+    estimate = brief["estimate"]
+    passed = (
+        bool(estimate["baseline"]["metric_id"])
+        and bool(estimate["baseline"]["source_snapshot_id"])
+        and bool(estimate["procurement_critical_path"]["citations"])
+        and estimate["assumptions"]["procurement_assumptions"]["days_per_month"] == 30.4375
+        and bool(estimate["commissioning_assumption"]["source_url"])
+        and bool(estimate["reproducibility_trace"])
+    )
+    return passed, "Key numbers have metric/source/assumption provenance." if passed else "Key number provenance missing.", {"estimate": estimate}
+
+
+def _ttp_no_guarantee_language(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    markdown = _ttp_brief(db_path)["markdown"].lower()
+    forbidden = ["will be energized", "guaranteed energization", "guaranteed interconnection approval", "will receive interconnection approval"]
+    passed = not any(term in markdown for term in forbidden)
+    return passed, "Brief avoids guarantee language." if passed else "Guarantee language found.", {"forbidden": forbidden}
+
+
+def _ttp_demo_end_to_end(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    brief = _ttp_brief(db_path)
+    path = Path(brief["markdown_path"])
+    passed = brief["title"].startswith("Time-to-Power Brief") and path.exists() and bool(brief["citations"])
+    return passed, "Fixture demo generated a complete brief artifact." if passed else "Fixture demo failed.", {"markdown_path": str(path), "brief_id": brief["brief_id"]}
+
+
+def _ttp_core_evals_still_pass(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    core_count = sum(1 for case in _cases() if case.category == "gridqueue_core")
+    passed = core_count == 12
+    return passed, "Existing core eval category remains intact." if passed else "Core eval category count changed.", {"core_count": core_count}
+
+
+def _ttp_flex_evals_still_pass(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    flex_count = sum(1 for case in _cases() if case.category == "flexibility_strategy")
+    passed = flex_count == 14
+    return passed, "Existing flexibility eval category remains intact." if passed else "Flex eval category count changed.", {"flex_count": flex_count}
+
+
+def _ttp_watcher_evals_still_pass(db_path: Path) -> tuple[bool, str, dict[str, Any]]:
+    watcher_count = sum(1 for case in _cases() if case.category == "monthly_watcher")
+    passed = watcher_count == 12
+    return passed, "Existing watcher eval category remains intact." if passed else "Watcher eval category count changed.", {"watcher_count": watcher_count}
+
+
 def _event_exists(db_path: Path, event_type: str, project_name: str) -> tuple[bool, str, dict[str, Any]]:
     with connect(db_path) as con:
         rows = con.execute(
@@ -951,6 +1247,29 @@ def _insert_lead_time_conflict(db_path: Path) -> None:
                     'low', FALSE, 18, 'Eval-only conflicting range.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             """
         )
+
+
+def _ensure_ttp_seeded(db_path: Path) -> None:
+    key = str(db_path)
+    if key not in _TTP_SEEDED_DBS:
+        seed_time_to_power_fixtures(reset_core=False, db_path=db_path)
+        _TTP_SEEDED_DBS.add(key)
+
+
+def _ttp_estimate(db_path: Path, **overrides: Any) -> dict[str, Any]:
+    _ensure_ttp_seeded(db_path)
+    key = f"{db_path}|estimate|{json.dumps(overrides, sort_keys=True, default=str)}"
+    if key not in _TTP_ESTIMATE_CACHE:
+        _TTP_ESTIMATE_CACHE[key] = generate_time_to_power_estimate(db_path=db_path, **overrides)
+    return _TTP_ESTIMATE_CACHE[key]
+
+
+def _ttp_brief(db_path: Path, **overrides: Any) -> dict[str, Any]:
+    _ensure_ttp_seeded(db_path)
+    key = f"{db_path}|brief|{json.dumps(overrides, sort_keys=True, default=str)}"
+    if key not in _TTP_BRIEF_CACHE:
+        _TTP_BRIEF_CACHE[key] = generate_time_to_power_brief(db_path=db_path, **overrides)
+    return _TTP_BRIEF_CACHE[key]
 
 
 def _category_summary(results: list[dict[str, Any]]) -> dict[str, dict[str, int]]:
