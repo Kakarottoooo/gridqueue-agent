@@ -1,0 +1,79 @@
+{
+  "adapter": {
+    "adapted_event_count": 210,
+    "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+    "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596"
+  },
+  "audit": {
+    "ambiguous_count": 0,
+    "ambiguous_matches": 0,
+    "ambiguous_path": "reports\\real_data\\entity_resolution_audit\\ercot_ambiguous_2026_04_to_2026_05.csv",
+    "exact_matches": 1996,
+    "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+    "fuzzy_matches": 0,
+    "manual_label_values": [
+      "same_entity",
+      "different_entity",
+      "true_new",
+      "true_removed",
+      "true_withdrawn",
+      "true_completed",
+      "reclassification",
+      "ambiguous_needs_review",
+      "insufficient_evidence"
+    ],
+    "manual_review_candidate_count": 50,
+    "manual_review_path": "reports\\real_data\\manual_review\\ercot_manual_review_template_2026_04_to_2026_05.csv",
+    "matches_path": "reports\\real_data\\entity_resolution_audit\\ercot_matches_2026_04_to_2026_05.csv",
+    "reclassifications": 3,
+    "row_count": 2206,
+    "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596",
+    "true_additions": 26,
+    "true_completed": 12,
+    "true_removals_or_missing": 57,
+    "true_withdrawals": 12
+  },
+  "diff": {
+    "counts_by_event_type": {
+      "capacity_changed": 7,
+      "completed_project": 12,
+      "fuel_type_changed": 3,
+      "name_changed": 2,
+      "new_project": 26,
+      "removed_project": 57,
+      "status_changed": 10,
+      "target_cod_accelerated": 4,
+      "target_cod_delayed": 77,
+      "unchanged": 1873,
+      "withdrawn_project": 12
+    },
+    "event_count": 2083,
+    "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+    "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596"
+  },
+  "digest_path": "reports\\real_data\\ercot\\real_monthly_digest_2026_04_to_2026_05.md",
+  "events_csv_path": "reports\\real_data\\ercot\\real_monthly_diff_events_2026_04_to_2026_05.csv",
+  "from_file_hash_sha256": "bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+  "from_normalized_row_count": 2053,
+  "from_row_count_raw": 2067,
+  "from_snapshot_date": "2026-04-30",
+  "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+  "profiles": [
+    "reports\\real_data\\ercot\\profile_2026_04.md",
+    "reports\\real_data\\ercot\\profile_2026_05.md"
+  ],
+  "resolver": {
+    "after_records": 2022,
+    "ambiguous_links": 0,
+    "before_records": 2053,
+    "entities_created": 2079,
+    "from_snapshot_id": "snap_real_ercot_gis_2026_04_bf97215d",
+    "linked_records": 4075,
+    "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596"
+  },
+  "to_file_hash_sha256": "31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+  "to_normalized_row_count": 2022,
+  "to_row_count_raw": 2034,
+  "to_snapshot_date": "2026-05-31",
+  "to_snapshot_id": "snap_real_ercot_gis_2026_05_31f2b596"
+}

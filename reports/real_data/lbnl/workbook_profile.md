@@ -1,0 +1,57 @@
+# LBNL workbook profile
+
+- source_url: https://eta.lbl.gov/publications/us-interconnection-queue-data-0
+- download_url: https://eta-publications.lbl.gov/sites/default/files/2026-05/lbnl_ix_queue_data_file_thru2025.xlsx
+- file_hash_sha256: `794582d3281c6a305e9615fcfec3fae9dc85be2165216d33760b677e976a08b6`
+- file_size_bytes: 15571236
+- project_level_sheet: 03. Complete Queue Data
+- project_row_count: 38201
+- codebook_sheet: 04. Data Codebook
+- codebook_row_count: 30
+- summary_tab_count: 39
+- parse_status: parsed
+
+## Sheet names
+- Introduction
+- Contents
+- 00. Background + Methods
+- 01. Balancing Areas
+- 02. Data Sample by Region
+- 03. Complete Queue Data
+- 04. Data Codebook
+- 05. Annual Requests
+- 06. Capacity Change YoY
+- 07. Active Capacity by Year
+- 08. Active Capacity by Type
+- 09. Active Cap. Region+Type
+- 10. Queues vs. Installed
+- 11. Active Cap. Maps
+- 12. Ix. Request Size Trends
+- 13. Other Gen. + Storage
+- 14. Hybrid Capacity
+- 15. ERIS + NRIS Capacity
+- 16. Cap. by Prop. Online Year
+- 17. Cap. by Ix. Phase
+- 18. IA Executed Capacity
+- 19. IA Throughput by Region
+- 20. ERAS and RRI Requests
+- 21. Operational Volume Trend
+- 22. Withdrawn Volume Trend
+- 23. Completion Rate Trend
+- 24. Comp. Rate Gen Type
+- 25. Comp. Rate Region
+- 26. Withdrawn Ix. Phase
+- 27. Post-IA Completion
+- 28. IR to WD
+- 29. IR to IA - all
+- 30. IR to IA - region
+- 31. IR to IA - type
+- 32. IR to IA - size
+- 33. IR to IA - service
+- 34. IA to COD - all
+- 35. IA to COD - region
+- 36. IA to COD - type
+- 37. IR to COD - all
+- 38. IR to COD - region
+- 39. IR to COD - type
+- 40. IR to COD - size

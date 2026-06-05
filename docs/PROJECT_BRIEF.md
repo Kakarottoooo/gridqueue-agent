@@ -20,6 +20,11 @@ Phase 4 adds a Time-to-Power Brief that connects the GridQueue baseline, Flexibi
 Lead-Time scaffold into one range-based planning artifact. It estimates serial and at-risk-overlap energization
 timelines from public-data proxies, explicit assumptions, citations, and caveats.
 
+The real-data validation slice uses two real ERCOT GIS monthly workbooks and the real LBNL Queued Up 2026 Data File.
+It generates source hashes, row counts, an ERCOT month-over-month digest, an entity-resolution audit CSV, LBNL summary
+reproduction checks, independent direct-XLSX checks, and separate real-data evals. This proves one public-data slice
+against real files; it does not make every market, queue, or large-load workflow production-ready.
+
 ## What this project does not do
 
 - It does not replace a formal interconnection study, deliverability study, power-flow result, or upgrade-cost estimate.

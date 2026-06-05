@@ -1,0 +1,195 @@
+{
+  "checks": [
+    {
+      "calculated": 2053,
+      "check": "raw_row_count_vs_ingested:ERCOT_GIS_2026_04.xlsx",
+      "delta": 0.0,
+      "details": "snapshot_id=snap_real_ercot_gis_2026_04_bf97215d hash=bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd",
+      "domain": "ercot",
+      "expected": 2053,
+      "status": "passed",
+      "tolerance": 0
+    },
+    {
+      "calculated": 0,
+      "check": "missing_key_fields:ERCOT_GIS_2026_04.xlsx",
+      "details": "Rows missing INR or project name under minimal independent parse.",
+      "domain": "ercot",
+      "expected": 0,
+      "status": "passed"
+    },
+    {
+      "calculated": {
+        "Active": 1845,
+        "Completed": 14,
+        "Inactive": 151,
+        "Withdrawn": 43
+      },
+      "check": "status_count_presence:ERCOT_GIS_2026_04.xlsx",
+      "details": "Independent status buckets are not expected to exactly match normalized buckets but both should be populated.",
+      "domain": "ercot",
+      "expected": {
+        "Active": 1845,
+        "Completed": 14,
+        "Suspended": 151,
+        "Withdrawn": 43
+      },
+      "status": "passed"
+    },
+    {
+      "calculated": {
+        "GAS": 55473.34,
+        "HYD": 230.0,
+        "MWH": 348.44,
+        "NUC": 1336.52,
+        "OIL": 151.9,
+        "OTH": 162513.54,
+        "SOL": 152392.89,
+        "WAT": 1232.0,
+        "WIN": 47434.67
+      },
+      "check": "active_capacity_by_fuel_presence:ERCOT_GIS_2026_04.xlsx",
+      "details": "Independent fuel buckets are raw ERCOT fuel labels; app buckets are normalized fuel labels.",
+      "domain": "ercot",
+      "expected": {
+        "Battery": 162313.54,
+        "Gas": 55473.34,
+        "Other": 3498.86,
+        "Solar": 152392.89,
+        "Wind": 47434.67
+      },
+      "status": "passed"
+    },
+    {
+      "calculated": 2022,
+      "check": "raw_row_count_vs_ingested:ERCOT_GIS_2026_05.xlsx",
+      "delta": 0.0,
+      "details": "snapshot_id=snap_real_ercot_gis_2026_05_31f2b596 hash=31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc",
+      "domain": "ercot",
+      "expected": 2022,
+      "status": "passed",
+      "tolerance": 0
+    },
+    {
+      "calculated": 0,
+      "check": "missing_key_fields:ERCOT_GIS_2026_05.xlsx",
+      "details": "Rows missing INR or project name under minimal independent parse.",
+      "domain": "ercot",
+      "expected": 0,
+      "status": "passed"
+    },
+    {
+      "calculated": {
+        "Active": 1839,
+        "Completed": 12,
+        "Inactive": 159,
+        "Withdrawn": 12
+      },
+      "check": "status_count_presence:ERCOT_GIS_2026_05.xlsx",
+      "details": "Independent status buckets are not expected to exactly match normalized buckets but both should be populated.",
+      "domain": "ercot",
+      "expected": {
+        "Active": 1839,
+        "Completed": 12,
+        "Suspended": 159,
+        "Withdrawn": 12
+      },
+      "status": "passed"
+    },
+    {
+      "calculated": {
+        "GAS": 61424.6,
+        "HYD": 79.63,
+        "NUC": 1336.52,
+        "OIL": 151.9,
+        "OTH": 163264.32,
+        "SOL": 151965.24,
+        "WAT": 1232.0,
+        "WIN": 47360.17
+      },
+      "check": "active_capacity_by_fuel_presence:ERCOT_GIS_2026_05.xlsx",
+      "details": "Independent fuel buckets are raw ERCOT fuel labels; app buckets are normalized fuel labels.",
+      "domain": "ercot",
+      "expected": {
+        "Battery": 163064.32,
+        "Gas": 61424.6,
+        "Other": 3000.05,
+        "Solar": 151965.24,
+        "Wind": 47360.17
+      },
+      "status": "passed"
+    },
+    {
+      "calculated": 1996,
+      "check": "exact_queue_id_overlap_between_months",
+      "details": "Exact INR overlap should exist for consecutive ERCOT GIS months.",
+      "domain": "ercot",
+      "expected": "> 0",
+      "status": "passed"
+    },
+    {
+      "calculated": 38201,
+      "check": "raw_row_count_vs_ingested",
+      "delta": 0.0,
+      "details": "hash=794582d3281c6a305e9615fcfec3fae9dc85be2165216d33760b677e976a08b6",
+      "domain": "lbnl",
+      "expected": 38201,
+      "status": "passed",
+      "tolerance": 0
+    },
+    {
+      "calculated": 1744.7481,
+      "check": "active_capacity_total_mw1_gw",
+      "details": "Direct pandas sum of active project-level mw_1.",
+      "domain": "lbnl",
+      "expected": "reported in lbnl_reproduction.md with comparison caveats",
+      "status": "passed"
+    },
+    {
+      "calculated": {
+        "Battery": 385.3298,
+        "Gas": 240.0239,
+        "Nuclear": 10.393,
+        "Offshore Wind": 23.4268,
+        "Other": 33.0213,
+        "Solar": 396.6147,
+        "Solar+Battery": 403.7582,
+        "Solar+Wind+Battery": 8.661,
+        "Wind": 177.7638,
+        "Wind+Battery": 15.9497
+      },
+      "check": "capacity_by_type_available",
+      "details": "Direct pandas type_clean capacity aggregation.",
+      "domain": "lbnl",
+      "expected": "non-empty",
+      "status": "passed"
+    },
+    {
+      "calculated": {
+        "active": 8513,
+        "operational": 4789,
+        "suspended": 668,
+        "unknown": 10,
+        "withdrawn": 24221
+      },
+      "check": "outcome_status_counts_available",
+      "details": "Direct pandas q_status counts.",
+      "domain": "lbnl",
+      "expected": "active/withdrawn/operational/suspended buckets present",
+      "status": "passed"
+    },
+    {
+      "calculated": 651.0,
+      "check": "duration_metric_available",
+      "details": "Direct pandas median duration for operational/withdrawn rows.",
+      "domain": "lbnl",
+      "expected": "non-empty terminal durations",
+      "status": "passed"
+    }
+  ],
+  "generated_at": "2026-06-05T14:03:02.148573+00:00",
+  "note": "Independent checks use direct pandas/openpyxl reads and minimal mappings, not GridQueue normalization/diff services.",
+  "status_counts": {
+    "passed": 14
+  }
+}

@@ -35,6 +35,8 @@ TABLES: tuple[str, ...] = (
     "flexibility_eligibility_results",
     "flexibility_tradeoff_points",
     "flexibility_briefs",
+    "real_lbnl_workbooks",
+    "real_lbnl_project_records",
     "snapshots",
     "raw_project_records",
     "normalized_project_records",
@@ -495,6 +497,70 @@ def init_database(db_path: str | Path | None = None) -> None:
               reproducibility_trace_json JSON NOT NULL,
               created_at TIMESTAMP NOT NULL,
               FOREIGN KEY (scenario_id) REFERENCES curtailment_scenarios(scenario_id)
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS real_lbnl_workbooks (
+              workbook_id TEXT PRIMARY KEY,
+              source_name TEXT NOT NULL,
+              source_url TEXT NOT NULL,
+              local_path TEXT NOT NULL,
+              file_hash_sha256 TEXT NOT NULL,
+              file_size_bytes BIGINT NOT NULL,
+              publication_date TEXT,
+              retrieved_at TIMESTAMP,
+              user_provided_at TIMESTAMP,
+              project_sheet_name TEXT NOT NULL,
+              row_count_raw INTEGER NOT NULL,
+              sheet_names_json JSON NOT NULL,
+              parser_version TEXT NOT NULL,
+              parse_status TEXT NOT NULL,
+              parse_errors_json JSON NOT NULL,
+              notes TEXT,
+              created_at TIMESTAMP NOT NULL
+            )
+            """
+        )
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS real_lbnl_project_records (
+              lbnl_record_id TEXT PRIMARY KEY,
+              workbook_id TEXT NOT NULL,
+              file_hash_sha256 TEXT NOT NULL,
+              source_url TEXT NOT NULL,
+              sheet_name TEXT NOT NULL,
+              row_number INTEGER NOT NULL,
+              q_id TEXT,
+              q_status TEXT,
+              q_date DATE,
+              prop_date DATE,
+              on_date DATE,
+              wd_date DATE,
+              ia_date DATE,
+              ia_phase_raw TEXT,
+              ia_phase_clean TEXT,
+              county TEXT,
+              state TEXT,
+              region TEXT,
+              project_name TEXT,
+              utility TEXT,
+              entity TEXT,
+              developer TEXT,
+              service TEXT,
+              project_type TEXT,
+              type_1 TEXT,
+              type_2 TEXT,
+              type_3 TEXT,
+              type_clean TEXT,
+              mw_1 DOUBLE,
+              mw_2 DOUBLE,
+              mw_3 DOUBLE,
+              q_year INTEGER,
+              prop_year INTEGER,
+              raw_payload_json JSON NOT NULL,
+              created_at TIMESTAMP NOT NULL
             )
             """
         )

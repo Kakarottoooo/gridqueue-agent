@@ -1,0 +1,13 @@
+cases:
+  - manual_labels_precision_if_present
+  - skipped_manual_review_if_no_human_labels
+manual_label_allowed_values:
+  - same_entity
+  - different_entity
+  - true_new
+  - true_removed
+  - true_withdrawn
+  - true_completed
+  - reclassification
+  - ambiguous_needs_review
+  - insufficient_evidence

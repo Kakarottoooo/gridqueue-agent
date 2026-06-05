@@ -1,0 +1,21 @@
+# Independent real-data checks
+
+- generated_at: 2026-06-05T14:03:02.148573+00:00
+- status_counts: {'passed': 14}
+- note: Independent checks use direct pandas/openpyxl reads and minimal mappings, not GridQueue normalization/diff services.
+
+## Checks
+- domain=ercot check=raw_row_count_vs_ingested:ERCOT_GIS_2026_04.xlsx status=passed calculated=2053 expected=2053 details=snapshot_id=snap_real_ercot_gis_2026_04_bf97215d hash=bf97215d9749e3d796b554e032a2d4bb5718c42ceccfa444b96bb1e69afc75fd
+- domain=ercot check=missing_key_fields:ERCOT_GIS_2026_04.xlsx status=passed calculated=0 expected=0 details=Rows missing INR or project name under minimal independent parse.
+- domain=ercot check=status_count_presence:ERCOT_GIS_2026_04.xlsx status=passed calculated={'Active': 1845, 'Withdrawn': 43, 'Inactive': 151, 'Completed': 14} expected={'Withdrawn': 43, 'Completed': 14, 'Active': 1845, 'Suspended': 151} details=Independent status buckets are not expected to exactly match normalized buckets but both should be populated.
+- domain=ercot check=active_capacity_by_fuel_presence:ERCOT_GIS_2026_04.xlsx status=passed calculated={'GAS': 55473.34, 'HYD': 230.0, 'MWH': 348.44, 'NUC': 1336.52, 'OIL': 151.9, 'OTH': 162513.54, 'SOL': 152392.89, 'WAT': 1232.0, 'WIN': 47434.67} expected={'Battery': 162313.54, 'Gas': 55473.34, 'Other': 3498.86, 'Solar': 152392.89, 'Wind': 47434.67} details=Independent fuel buckets are raw ERCOT fuel labels; app buckets are normalized fuel labels.
+- domain=ercot check=raw_row_count_vs_ingested:ERCOT_GIS_2026_05.xlsx status=passed calculated=2022 expected=2022 details=snapshot_id=snap_real_ercot_gis_2026_05_31f2b596 hash=31f2b596c69c64af537e0653beb9a2ab64bdd2a01e03e4a818b33cbafc5c88cc
+- domain=ercot check=missing_key_fields:ERCOT_GIS_2026_05.xlsx status=passed calculated=0 expected=0 details=Rows missing INR or project name under minimal independent parse.
+- domain=ercot check=status_count_presence:ERCOT_GIS_2026_05.xlsx status=passed calculated={'Active': 1839, 'Withdrawn': 12, 'Inactive': 159, 'Completed': 12} expected={'Suspended': 159, 'Withdrawn': 12, 'Completed': 12, 'Active': 1839} details=Independent status buckets are not expected to exactly match normalized buckets but both should be populated.
+- domain=ercot check=active_capacity_by_fuel_presence:ERCOT_GIS_2026_05.xlsx status=passed calculated={'GAS': 61424.6, 'HYD': 79.63, 'NUC': 1336.52, 'OIL': 151.9, 'OTH': 163264.32, 'SOL': 151965.24, 'WAT': 1232.0, 'WIN': 47360.17} expected={'Battery': 163064.32, 'Gas': 61424.6, 'Other': 3000.05, 'Solar': 151965.24, 'Wind': 47360.17} details=Independent fuel buckets are raw ERCOT fuel labels; app buckets are normalized fuel labels.
+- domain=ercot check=exact_queue_id_overlap_between_months status=passed calculated=1996 expected=> 0 details=Exact INR overlap should exist for consecutive ERCOT GIS months.
+- domain=lbnl check=raw_row_count_vs_ingested status=passed calculated=38201 expected=38201 details=hash=794582d3281c6a305e9615fcfec3fae9dc85be2165216d33760b677e976a08b6
+- domain=lbnl check=active_capacity_total_mw1_gw status=passed calculated=1744.7481 expected=reported in lbnl_reproduction.md with comparison caveats details=Direct pandas sum of active project-level mw_1.
+- domain=lbnl check=capacity_by_type_available status=passed calculated={'Solar+Battery': 403.7582, 'Solar': 396.6147, 'Battery': 385.3298, 'Gas': 240.0239, 'Wind': 177.7638, 'Other': 33.0213, 'Offshore Wind': 23.4268, 'Wind+Battery': 15.9497, 'Nuclear': 10.393, 'Solar+Wind+Battery': 8.661} expected=non-empty details=Direct pandas type_clean capacity aggregation.
+- domain=lbnl check=outcome_status_counts_available status=passed calculated={'withdrawn': 24221, 'active': 8513, 'operational': 4789, 'suspended': 668, 'unknown': 10} expected=active/withdrawn/operational/suspended buckets present details=Direct pandas q_status counts.
+- domain=lbnl check=duration_metric_available status=passed calculated=651.0 expected=non-empty terminal durations details=Direct pandas median duration for operational/withdrawn rows.

@@ -1,0 +1,6 @@
+cases:
+  - workbook_profile_exists
+  - at_least_three_metrics_calculated
+  - official_summary_comparison_exists
+  - mismatches_documented
+  - no_load_interconnection_claim_from_lbnl_generation_storage_data
