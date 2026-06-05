@@ -13,6 +13,8 @@ services:
         value: "true"
       - key: GRIDQUEUE_CORS_ORIGINS
         value: https://gridqueue-web.onrender.com
+      - key: GRIDQUEUE_WEB_URL
+        value: https://gridqueue-web.onrender.com
 
   - type: web
     name: gridqueue-web

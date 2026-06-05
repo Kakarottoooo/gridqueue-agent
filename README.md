@@ -26,11 +26,18 @@ coverage, formal interconnection studies, or large-load/data-center queue covera
 
 ## Public demo status
 
-This repo now has a deployable public demo shape:
+Live public demo:
 
-- `render.yaml` defines a FastAPI service and a Next.js web service.
-- `scripts/start_public_api.py` seeds deterministic demo data on startup, so visitors can test the UI without running
-  local commands.
+- Web demo: https://gridqueue-web.onrender.com
+- API root: https://gridqueue-api.onrender.com
+- API docs: https://gridqueue-api.onrender.com/docs
+- API health: https://gridqueue-api.onrender.com/health
+
+How it is deployed:
+
+- `render.yaml` defines a FastAPI service and a Next.js web service on Render.
+- `scripts/start_public_api.py` seeds deterministic demo data on API startup, so visitors can test the UI without
+  running local commands.
 - The public demo is meant for product discovery and screenshots. The real-data evidence remains in the checked-in
   reports above because raw XLSX source files are intentionally not committed.
 

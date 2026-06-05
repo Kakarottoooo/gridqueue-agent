@@ -10,6 +10,13 @@ This is the smallest credible way to make GridQueue testable by other people wit
 - Working flows for queue briefs, flexibility briefs, watcher digests, and time-to-power briefs.
 - Links back to the real-data validation reports committed in GitHub.
 
+Live URLs:
+
+- Web demo: https://gridqueue-web.onrender.com
+- API root: https://gridqueue-api.onrender.com
+- API docs: https://gridqueue-api.onrender.com/docs
+- API health: https://gridqueue-api.onrender.com/health
+
 ## What the public demo does not include yet
 
 - User accounts.
@@ -58,7 +65,7 @@ Use the repo URL as the technical proof link:
 
 Use the hosted web URL as the user-test link after deployment:
 
-`https://<web-service>.onrender.com`
+`https://gridqueue-web.onrender.com`
 
 Use the real evidence links for credibility:
 

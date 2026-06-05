@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -28,6 +29,21 @@ def _iso(value: Any) -> Any:
 def health() -> dict[str, str]:
     init_database()
     return {"status": "ok"}
+
+
+@router.get("/")
+def root() -> dict[str, Any]:
+    init_database()
+    return {
+        "service": "GridQueue Agent API",
+        "status": "ok",
+        "message": "This is the API service. Open /docs for interactive API docs or use the web demo URL.",
+        "docs_url": "/docs",
+        "health_url": "/health",
+        "web_demo_url": os.getenv("GRIDQUEUE_WEB_URL", "https://gridqueue-web.onrender.com"),
+        "github_url": "https://github.com/Kakarottoooo/gridqueue-agent",
+        "real_data_validation": "https://github.com/Kakarottoooo/gridqueue-agent/blob/main/docs/REAL_DATA_VALIDATION.md",
+    }
 
 
 @router.get("/sources")

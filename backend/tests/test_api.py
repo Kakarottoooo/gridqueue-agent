@@ -9,6 +9,10 @@ def test_api_fixture_to_brief_flow(tmp_path, monkeypatch) -> None:
     monkeypatch.setenv("GRIDQUEUE_DB_PATH", str(tmp_path / "api.duckdb"))
     client = TestClient(app)
 
+    root = client.get("/")
+    assert root.status_code == 200
+    assert root.json()["docs_url"] == "/docs"
+
     assert client.get("/health").json()["status"] == "ok"
     ingest = client.post("/ingest/fixtures")
     assert ingest.status_code == 200
@@ -37,4 +41,3 @@ def test_api_fixture_to_brief_flow(tmp_path, monkeypatch) -> None:
     body = brief.json()
     assert body["queue_snapshot"]["matching_records"] >= 1
     assert body["citations"]
-
