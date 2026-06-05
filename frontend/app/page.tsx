@@ -1,14 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Activity, BarChart3, BookOpenCheck, Database, FileText, GitCompare, ListChecks, RefreshCw, SearchCode } from "lucide-react";
+import { Activity, AlertTriangle, BarChart3, BookOpenCheck, Database, FileText, GitCompare, ListChecks, RefreshCw, SearchCode, ShieldCheck, Zap } from "lucide-react";
 import { JsonBlock } from "@/components/JsonBlock";
-import { apiGet, apiPost, type Brief, type BriefRequest, type DiffResult, type EntityMatches, type Snapshot, type Source } from "@/lib/api";
+import { apiGet, apiPost, type Brief, type BriefRequest, type DiffResult, type EntityMatches, type FlexibilityBrief, type FlexibilityRequest, type Snapshot, type Source } from "@/lib/api";
 
-type TabKey = "brief" | "diff" | "metrics" | "matching" | "citations" | "evals";
+type TabKey = "brief" | "flexibility" | "diff" | "metrics" | "matching" | "citations" | "evals";
 
 const tabs: Array<{ key: TabKey; label: string }> = [
   { key: "brief", label: "Brief" },
+  { key: "flexibility", label: "Flexibility Strategy" },
   { key: "diff", label: "Monthly Diff" },
   { key: "metrics", label: "Metrics" },
   { key: "matching", label: "Entity Matching" },
@@ -26,14 +27,42 @@ const defaultForm: BriefRequest = {
   min_sample_n: 2
 };
 
+const defaultFlexForm: FlexibilityRequest = {
+  market: "ERCOT",
+  jurisdiction: "FERC",
+  county: "Reeves",
+  peak_mw: 100,
+  average_load_factor: 0.85,
+  commitment_depth_pct: 25,
+  event_duration_hours: 3,
+  events_per_year: 20,
+  deferrable_workload_fraction: 0.55,
+  latency_sensitive_fraction: 0.25,
+  migratable_fraction: 0.2,
+  gpu_power_kw: 0.7,
+  gpu_hour_value_usd: 3,
+  deferral_penalty_per_gpu_hour_usd: 0.25,
+  migration_penalty_per_gpu_hour_usd: 0.75,
+  dropped_work_penalty_per_gpu_hour_usd: 4,
+  colocated_generation: false,
+  dispatchable_or_curtailable: true,
+  metering_or_control_capability: true,
+  baseline_project_type: "Battery",
+  min_sample_n: 2,
+  value_per_day_usd: null
+};
+
 export default function Home() {
   const [form, setForm] = useState<BriefRequest>(defaultForm);
+  const [flexForm, setFlexForm] = useState<FlexibilityRequest>(defaultFlexForm);
   const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
   const [sources, setSources] = useState<Source[]>([]);
+  const [flexRules, setFlexRules] = useState<Array<Record<string, unknown>>>([]);
   const [fromSnapshot, setFromSnapshot] = useState("");
   const [toSnapshot, setToSnapshot] = useState("");
   const [activeTab, setActiveTab] = useState<TabKey>("brief");
   const [brief, setBrief] = useState<Brief | null>(null);
+  const [flexBrief, setFlexBrief] = useState<FlexibilityBrief | null>(null);
   const [diff, setDiff] = useState<DiffResult | null>(null);
   const [metrics, setMetrics] = useState<Record<string, unknown> | null>(null);
   const [matches, setMatches] = useState<EntityMatches | null>(null);
@@ -162,6 +191,42 @@ export default function Home() {
     }
   }
 
+  async function seedFlexRules() {
+    setBusy(true);
+    setStatus("Seeding flexibility rules and evidence records...");
+    try {
+      await apiPost("/flexibility/seed");
+      const result = await apiGet<{ rules: Array<Record<string, unknown>> }>("/flexibility/rules");
+      setFlexRules(result.rules);
+      setStatus("Flexibility rules seeded with conservative source-backed statuses.");
+      setActiveTab("flexibility");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Flexibility rule seed failed.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function generateFlexibilityBrief() {
+    setBusy(true);
+    setStatus("Generating Flexibility Strategy Brief...");
+    try {
+      await apiPost("/flexibility/seed");
+      const [rulesResult, briefResult] = await Promise.all([
+        apiGet<{ rules: Array<Record<string, unknown>> }>("/flexibility/rules"),
+        apiPost<{ brief: FlexibilityBrief }>("/flexibility/brief", flexForm)
+      ]);
+      setFlexRules(rulesResult.rules);
+      setFlexBrief(briefResult.brief);
+      setStatus("Flexibility Strategy Brief generated with rule statuses, assumptions, and citations.");
+      setActiveTab("flexibility");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Flexibility brief generation failed.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <main className="app-shell">
       <aside className="control-panel" aria-label="Project input form">
@@ -252,6 +317,93 @@ export default function Home() {
             Run evals
           </button>
         </div>
+
+        <section className="flex-control-block" aria-label="Flexibility Strategy inputs">
+          <div className="control-heading">
+            <ShieldCheck size={17} aria-hidden="true" />
+            <span>Flexibility Strategy</span>
+          </div>
+          <button className="secondary-button" type="button" onClick={seedFlexRules} disabled={busy}>
+            <Database size={17} aria-hidden="true" />
+            Seed flex rules
+          </button>
+          <form className="form-grid" onSubmit={(event) => { event.preventDefault(); void generateFlexibilityBrief(); }}>
+            <label>
+              <span>Jurisdiction</span>
+              <select value={flexForm.jurisdiction} onChange={(event) => setFlexForm({ ...flexForm, jurisdiction: event.target.value })}>
+                <option value="FERC">FERC</option>
+                <option value="SPP">SPP</option>
+                <option value="PJM">PJM</option>
+                <option value="ERCOT">ERCOT</option>
+                <option value="DEMO">DEMO</option>
+              </select>
+            </label>
+            <label>
+              <span>Peak MW</span>
+              <input type="number" value={flexForm.peak_mw} onChange={(event) => setFlexForm({ ...flexForm, peak_mw: Number(event.target.value) })} />
+            </label>
+            <label>
+              <span>Commitment %</span>
+              <input type="number" value={flexForm.commitment_depth_pct} onChange={(event) => setFlexForm({ ...flexForm, commitment_depth_pct: Number(event.target.value) })} />
+            </label>
+            <label>
+              <span>Event hours</span>
+              <input type="number" value={flexForm.event_duration_hours} onChange={(event) => setFlexForm({ ...flexForm, event_duration_hours: Number(event.target.value) })} />
+            </label>
+            <label>
+              <span>Events / year</span>
+              <input type="number" value={flexForm.events_per_year} onChange={(event) => setFlexForm({ ...flexForm, events_per_year: Number(event.target.value) })} />
+            </label>
+            <label>
+              <span>Deferrable frac.</span>
+              <input type="number" step="0.01" value={flexForm.deferrable_workload_fraction} onChange={(event) => setFlexForm({ ...flexForm, deferrable_workload_fraction: Number(event.target.value) })} />
+            </label>
+            <label>
+              <span>Migratable frac.</span>
+              <input type="number" step="0.01" value={flexForm.migratable_fraction} onChange={(event) => setFlexForm({ ...flexForm, migratable_fraction: Number(event.target.value) })} />
+            </label>
+            <label>
+              <span>Latency-sensitive frac.</span>
+              <input type="number" step="0.01" value={flexForm.latency_sensitive_fraction} onChange={(event) => setFlexForm({ ...flexForm, latency_sensitive_fraction: Number(event.target.value) })} />
+            </label>
+            <label>
+              <span>GPU power kW</span>
+              <input type="number" step="0.01" value={flexForm.gpu_power_kw} onChange={(event) => setFlexForm({ ...flexForm, gpu_power_kw: Number(event.target.value) })} />
+            </label>
+            <label>
+              <span>Deferral penalty</span>
+              <input type="number" step="0.01" value={flexForm.deferral_penalty_per_gpu_hour_usd} onChange={(event) => setFlexForm({ ...flexForm, deferral_penalty_per_gpu_hour_usd: Number(event.target.value) })} />
+            </label>
+            <label>
+              <span>Migration penalty</span>
+              <input type="number" step="0.01" value={flexForm.migration_penalty_per_gpu_hour_usd} onChange={(event) => setFlexForm({ ...flexForm, migration_penalty_per_gpu_hour_usd: Number(event.target.value) })} />
+            </label>
+            <label>
+              <span>Dropped work penalty</span>
+              <input type="number" step="0.01" value={flexForm.dropped_work_penalty_per_gpu_hour_usd} onChange={(event) => setFlexForm({ ...flexForm, dropped_work_penalty_per_gpu_hour_usd: Number(event.target.value) })} />
+            </label>
+            <label>
+              <span>Value / day</span>
+              <input type="number" value={flexForm.value_per_day_usd ?? ""} onChange={(event) => setFlexForm({ ...flexForm, value_per_day_usd: event.target.value ? Number(event.target.value) : null })} />
+            </label>
+            <label className="checkbox-row">
+              <input type="checkbox" checked={Boolean(flexForm.dispatchable_or_curtailable)} onChange={(event) => setFlexForm({ ...flexForm, dispatchable_or_curtailable: event.target.checked })} />
+              <span>Curtailable control</span>
+            </label>
+            <label className="checkbox-row">
+              <input type="checkbox" checked={Boolean(flexForm.metering_or_control_capability)} onChange={(event) => setFlexForm({ ...flexForm, metering_or_control_capability: event.target.checked })} />
+              <span>Metering/control capability</span>
+            </label>
+            <label className="checkbox-row">
+              <input type="checkbox" checked={flexForm.colocated_generation} onChange={(event) => setFlexForm({ ...flexForm, colocated_generation: event.target.checked })} />
+              <span>Co-located generation</span>
+            </label>
+            <button className="primary-button" type="submit" disabled={busy}>
+              <Zap size={18} aria-hidden="true" />
+              Generate flex brief
+            </button>
+          </form>
+        </section>
       </aside>
 
       <section className="workspace">
@@ -276,6 +428,7 @@ export default function Home() {
 
         <div className="tab-panel">
           {activeTab === "brief" && <BriefTab brief={brief} />}
+          {activeTab === "flexibility" && <FlexibilityTab brief={flexBrief} rules={flexRules} />}
           {activeTab === "diff" && <DiffTab diff={diff} />}
           {activeTab === "metrics" && <MetricsTab metrics={metrics ?? brief?.historical_proxy ?? null} />}
           {activeTab === "matching" && <MatchesTab matches={matches} />}
@@ -284,6 +437,64 @@ export default function Home() {
         </div>
       </section>
     </main>
+  );
+}
+
+function FlexibilityTab({ brief, rules }: { brief: FlexibilityBrief | null; rules: Array<Record<string, unknown>> }) {
+  if (!brief && !rules.length) {
+    return <EmptyState icon={<ShieldCheck size={24} />} title="No flexibility strategy loaded" body="Seed flexibility rules or generate a Flexibility Strategy Brief." />;
+  }
+  if (!brief) {
+    return (
+      <div className="content-stack">
+        <section>
+          <h2>Seeded Flexibility Rules</h2>
+          <DataTable rows={rules} columns={["jurisdiction", "provision_name", "status", "provision_type", "source_url"]} />
+        </section>
+      </div>
+    );
+  }
+  return (
+    <div className="content-stack">
+      <section className="brief-banner">
+        <AlertTriangle size={20} aria-hidden="true" />
+        <span>{brief.caveats_and_abstentions[0]}</span>
+      </section>
+      <section>
+        <h2>Executive Summary</h2>
+        <ul className="plain-list">
+          {brief.executive_summary.map((item) => <li key={item}>{item}</li>)}
+        </ul>
+      </section>
+      <section className="metric-strip">
+        <Metric label="Rule status" value={String(brief.relevant_flexibility_rules[0]?.rule_status ?? "NA")} />
+        <Metric label="Eligibility" value={String(brief.relevant_flexibility_rules[0]?.eligibility_status ?? "NA")} />
+        <Metric label="Compute cost" value={`$${Number(brief.compute_cost_estimate.estimated_compute_cost_usd ?? 0).toLocaleString()}`} />
+        <Metric label="Benefit status" value={String(brief.interconnection_benefit_assessment.benefit_status ?? "NA")} />
+      </section>
+      <section>
+        <h2>Relevant Flexibility Rules</h2>
+        <DataTable rows={brief.relevant_flexibility_rules} columns={["jurisdiction", "provision_name", "rule_status", "eligibility_status", "source_url"]} />
+      </section>
+      <section>
+        <h2>Commitment Tradeoff</h2>
+        <DataTable rows={brief.commitment_tradeoff_table} columns={["commitment_depth_pct", "annual_curtailed_mwh", "estimated_compute_cost_usd", "estimated_timeline_delta_days", "benefit_status", "net_benefit_score"]} />
+      </section>
+      <section>
+        <h2>Assumptions</h2>
+        <JsonBlock value={brief.assumptions} />
+      </section>
+      <section>
+        <h2>Citations</h2>
+        <DataTable rows={brief.citations} columns={["citation_label", "citation_text", "source_url"]} />
+      </section>
+      <section>
+        <h2>Reproducibility Trace</h2>
+        <ul className="trace-list">
+          {brief.reproducibility_trace.map((item) => <li key={item}>{item}</li>)}
+        </ul>
+      </section>
+    </div>
   );
 }
 

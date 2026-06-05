@@ -55,6 +55,50 @@ export type Brief = {
   markdown: string;
 };
 
+export type FlexibilityRequest = {
+  market: string;
+  jurisdiction: string;
+  county: string;
+  peak_mw: number;
+  average_load_factor: number;
+  commitment_depth_pct: number;
+  event_duration_hours: number;
+  events_per_year: number;
+  deferrable_workload_fraction: number;
+  latency_sensitive_fraction: number;
+  migratable_fraction: number;
+  gpu_power_kw: number;
+  gpu_hour_value_usd: number;
+  deferral_penalty_per_gpu_hour_usd: number;
+  migration_penalty_per_gpu_hour_usd: number;
+  dropped_work_penalty_per_gpu_hour_usd: number;
+  colocated_generation: boolean;
+  dispatchable_or_curtailable: boolean | null;
+  metering_or_control_capability: boolean | null;
+  baseline_project_type: string;
+  min_sample_n: number;
+  value_per_day_usd: number | null;
+};
+
+export type FlexibilityBrief = {
+  title: string;
+  executive_summary: string[];
+  input_scenario: Record<string, unknown>;
+  relevant_flexibility_rules: Array<Record<string, unknown>>;
+  eligibility_assessment: Array<Record<string, unknown>>;
+  compute_cost_estimate: Record<string, unknown>;
+  interconnection_benefit_assessment: Record<string, unknown>;
+  commitment_tradeoff_table: Array<Record<string, unknown>>;
+  recommendation: Record<string, unknown>;
+  assumptions: Record<string, unknown>;
+  citations: Array<Record<string, unknown>>;
+  reproducibility_trace: string[];
+  caveats_and_abstentions: string[];
+  markdown: string;
+  brief_id: string;
+  scenario_id: string;
+};
+
 export type DiffResult = {
   from_snapshot_id: string;
   to_snapshot_id: string;
