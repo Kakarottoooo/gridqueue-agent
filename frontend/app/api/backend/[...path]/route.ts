@@ -1,6 +1,17 @@
 import { NextRequest } from "next/server";
 
-const backendApiUrl = process.env.BACKEND_API_URL ?? "http://127.0.0.1:8000";
+function backendUrl() {
+  if (process.env.BACKEND_API_URL) {
+    return process.env.BACKEND_API_URL;
+  }
+
+  if (process.env.BACKEND_API_HOST) {
+    const port = process.env.BACKEND_API_PORT ? `:${process.env.BACKEND_API_PORT}` : "";
+    return `http://${process.env.BACKEND_API_HOST}${port}`;
+  }
+
+  return "http://127.0.0.1:8000";
+}
 
 type RouteContext = {
   params: Promise<{ path: string[] }>;
@@ -9,7 +20,7 @@ type RouteContext = {
 async function forward(request: NextRequest, context: RouteContext) {
   const { path } = await context.params;
   const sourceUrl = new URL(request.url);
-  const target = new URL(path.join("/"), `${backendApiUrl.replace(/\/$/, "")}/`);
+  const target = new URL(path.join("/"), `${backendUrl().replace(/\/$/, "")}/`);
   target.search = sourceUrl.search;
 
   const headers = new Headers();
