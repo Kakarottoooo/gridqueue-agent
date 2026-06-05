@@ -23,6 +23,9 @@ jobs:
       - name: Ingest fixture data
         run: python scripts/ingest_fixture.py
 
+      - name: Seed flexibility rules
+        run: python scripts/seed_flexibility_rules.py
+
       - name: Run backend tests
         run: python -m pytest backend/tests
 

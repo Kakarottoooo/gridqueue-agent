@@ -27,6 +27,35 @@
 - Role: Optional future ingestion adapter reference.
 - MVP status: Documented but not required.
 
+## FERC RM26-4 large-load interconnection docket
+
+- URL: https://www.ferc.gov/rm26-4
+- Role: Flexibility Strategy rule-status context for large-load interconnection reform.
+- Phase 2 status: Seeded as pending/proposed ANOPR context, not final rule authority.
+- Caveat: Does not support guaranteed benefits or quantified timeline savings.
+
+## SPP High Impact Large Load integration
+
+- URL: https://www.spp.org/markets-operations/high-impact-large-load-hill-integration/
+- Role: Public SPP HILL/HILLGA/CHILL process context.
+- Phase 2 status: Seeded as approved based on public SPP/FERC materials, but qualitative unless quantified benefit JSON
+  is manually verified and seeded.
+- Caveat: Seeded text is not a substitute for tariff review.
+
+## FERC PJM co-located load fact sheet
+
+- URL: https://www.ferc.gov/news-events/news/fact-sheet-ferc-directs-nations-largest-grid-operator-create-new-rules-embrace
+- Role: Public context for directed PJM co-located load reforms.
+- Phase 2 status: Seeded as directed/reform pending.
+- Caveat: Not treated as final tariff terms.
+
+## Emerald AI / EPRI DCFlex field demonstration
+
+- URL: https://arxiv.org/html/2507.00909v1
+- Role: Technical evidence anchor for compute-flexibility extrapolation checks.
+- Phase 2 status: Seeded as `technical_evidence`.
+- Caveat: It is not an ISO/RTO tariff or regulatory eligibility rule.
+
 ## Manual ingestion fallback
 
 If automatic source download is blocked or a public website changes, use:
@@ -38,4 +67,3 @@ python scripts/ingest_lbnl.py data/raw/<lbnl-file.xlsx>
 
 The ingester records source metadata, file hash, snapshot date, row count, raw payload JSON, normalized records,
 and record-level citations.
-

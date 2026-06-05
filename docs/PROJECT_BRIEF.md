@@ -8,6 +8,10 @@ sample-aware historical proxy metrics, and generates citation-grounded public in
 The first version is designed for deterministic local demos and technical inspection. Fixture data is
 synthetic but intentionally shaped like messy ERCOT GIS-style queue rows so tests and evals can run offline.
 
+Phase 2 adds a Flexibility Strategy Layer for large-load planning. It evaluates public FERC/ISO/RTO rule status,
+curtailable-load eligibility, compute-side curtailment cost, and whether any interconnection benefit should be treated
+as quantified, qualitative, contingent, unsupported, or abstained.
+
 ## What this project does not do
 
 - It does not replace a formal interconnection study, deliverability study, power-flow result, or upgrade-cost estimate.
@@ -15,6 +19,8 @@ synthetic but intentionally shaped like messy ERCOT GIS-style queue rows so test
 - It does not claim queue outcomes that are unsupported by public source rows.
 - It does not treat ERCOT generation queue records as a full data-center or large-load queue.
 - It does not hide ambiguous entity matches behind a single forced answer.
+- It does not execute load curtailment, schedule GPU workloads, provide legal/financial advice, or guarantee that a
+  flexible load will receive faster approval.
 
 ## Domain safety and abstention rules
 
@@ -32,4 +38,4 @@ synthetic but intentionally shaped like messy ERCOT GIS-style queue rows so test
 3. Choose market, fuel type, county, MW size, target COD year, and optional question.
 4. Generate a Public Interconnection Risk Brief.
 5. Inspect monthly diff events, entity match evidence, metric fallback, citations, and eval results.
-
+6. Optionally seed flexibility rules and generate a Flexibility Strategy Brief for a large-load curtailment scenario.

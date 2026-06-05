@@ -5,6 +5,9 @@ public or synthetic queue snapshots, normalizes messy project records, resolves 
 snapshots, detects meaningful changes, computes sample-aware historical proxy metrics, and generates citation-grounded
 Public Interconnection Risk Briefs.
 
+Phase 2 adds a Flexibility Strategy Layer for large-load planning. It evaluates whether a proposed curtailable-load
+commitment is worth considering under public FERC/ISO/RTO context and explicit compute-cost assumptions.
+
 It complements power-development platforms such as Paces by focusing on the public-data layer: queue monitoring,
 change detection, historical benchmarking, source-grounded summaries, and automated quality checks. It does not copy
 parcel-level siting, permitting, proprietary diligence, power-flow studies, or upgrade-cost modeling workflows.
@@ -15,6 +18,8 @@ parcel-level siting, permitting, proprietary diligence, power-flow studies, or u
 - It does not perform parcel siting, permitting, or proprietary development diligence.
 - It does not treat ERCOT generation queue records as a full large-load or data-center queue.
 - It does not report rates from samples that are too small; it rolls up or abstains.
+- The Flexibility Strategy Layer does not execute curtailment, schedule GPU workloads, submit interconnection filings,
+  provide legal advice, estimate real upgrade costs, or guarantee approval.
 
 ## Architecture
 
@@ -36,6 +41,8 @@ graph TD
   E --> L
   F --> L
   G --> L
+  G --> M["Flexibility Strategy Layer"]
+  M --> J
 ```
 
 ## Data sources
@@ -54,6 +61,7 @@ make install
 make ingest-fixtures
 make test
 make eval
+make seed-flex-rules
 make dev-api
 make dev-web
 ```
@@ -70,6 +78,7 @@ If `make` is unavailable on Windows, run the underlying commands:
 python -m pip install -e backend[dev]
 cd frontend; npm install; cd ..
 python scripts/ingest_fixture.py
+python scripts/seed_flexibility_rules.py
 python -m pytest backend/tests
 python evals/run_evals.py
 python -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000 --reload
@@ -82,6 +91,69 @@ cd frontend; npm run dev
 2. Use the default ERCOT, Battery, Reeves, 100 MW, 2028 input.
 3. Click `Generate brief`.
 4. Inspect the Brief, Monthly Diff, Metrics, Entity Matching, Citations, and Evals tabs.
+
+## Phase 2: Flexibility Strategy Layer
+
+Flexibility Strategy Layer is the upstream decision layer to runtime flexibility controllers. It helps evaluate whether
+a proposed curtailable-load commitment is worth considering under public rules and explicit compute assumptions. It
+does not execute curtailment, schedule GPU workloads, submit interconnection filings, perform formal studies, estimate
+real upgrade costs, or guarantee approval.
+
+Seed the rule/evidence database:
+
+```powershell
+make seed-flex-rules
+```
+
+Windows fallback:
+
+```powershell
+python scripts/seed_flexibility_rules.py
+```
+
+Generate a flexibility brief through the API:
+
+```powershell
+Invoke-RestMethod -Method Post http://127.0.0.1:8000/flexibility/brief -ContentType application/json -Body '{
+  "market": "ERCOT",
+  "jurisdiction": "FERC",
+  "county": "Reeves",
+  "peak_mw": 100,
+  "average_load_factor": 0.85,
+  "commitment_depth_pct": 25,
+  "event_duration_hours": 3,
+  "events_per_year": 20,
+  "dispatchable_or_curtailable": true,
+  "metering_or_control_capability": true,
+  "min_sample_n": 2
+}'
+```
+
+New endpoints:
+
+- `GET /flexibility/rules`
+- `POST /flexibility/seed`
+- `POST /flexibility/compute-cost`
+- `POST /flexibility/eligibility`
+- `POST /flexibility/tradeoff`
+- `POST /flexibility/brief`
+- `GET /flexibility/scenarios/{scenario_id}`
+
+UI walkthrough:
+
+1. Ingest fixtures.
+2. Seed flexibility rules.
+3. Set jurisdiction, peak MW, curtailment commitment, event duration, event count, workload mix, GPU power, penalties,
+   and control capability.
+4. Click `Generate flex brief`.
+5. Inspect the Flexibility Strategy tab for rule statuses, eligibility, compute assumptions, tradeoff table,
+   recommendation mode, citations, and caveats.
+
+Rule-status warning: proposed, pending, directed, context-only, technical-evidence, or needs-review records are not
+taken as final benefits. If eligibility is ambiguous or the baseline is insufficient, the layer abstains or marks the
+result contingent.
+
+See `docs/FLEXIBILITY_STRATEGY.md`, `docs/FLEXIBILITY_RULES.md`, and `docs/COMPUTE_COST_MODEL.md`.
 
 ## Entity resolution
 
@@ -109,9 +181,9 @@ Sample output:
 
 ```json
 {
-  "passed": 12,
+  "passed": 26,
   "failed": 0,
-  "total": 12
+  "total": 26
 }
 ```
 
@@ -134,6 +206,7 @@ Calling those scripts without a file prints manual-download instructions.
 - Frontend lint: `cd frontend && npm run lint`
 - Frontend build: `cd frontend && npm run build`
 - Dependency audit: `cd frontend && npm audit --audit-level=moderate`
+- Flexibility seed: `python scripts/seed_flexibility_rules.py`
 
 ## Demo screenshots
 
@@ -146,6 +219,9 @@ inspect the current fixture-backed demo.
 - Fixture samples are small, so demo metric thresholds are lowered explicitly where needed.
 - LBNL national benchmark fallback is represented in methodology but not populated by default fixtures.
 - Entity resolution is deterministic and auditable, not a calibrated probabilistic model.
+- Flexibility rule seeds require manual verification before real-world use; FERC/PJM pending or directed records are not
+  treated as final benefits.
+- Compute-cost penalty values are scenario assumptions, not observed market prices or legal/financial advice.
 
 ## Roadmap
 
@@ -154,3 +230,4 @@ inspect the current fixture-backed demo.
 - Add market-specific threshold calibration.
 - Add optional LLM polishing constrained to deterministic facts and citations.
 - Add Docker Compose and hosted preview deployment.
+- Add human review workflow for flexibility rule/status verification.
